@@ -10,16 +10,14 @@ if (!isset($_SESSION['user_id'])) {
 
 // Lấy thông tin người dùng từ cơ sở dữ liệu
 $user_id = $_SESSION['user_id'];
-$query = "SELECT role FROM users WHERE id = ?";
+$query = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $role = $user['role']; // 'user' hoặc 'admin'
-
-if ($role == 'admin') {
-}
+$username = $user['username'];
 ?>
 
 <!DOCTYPE html>
@@ -29,17 +27,13 @@ if ($role == 'admin') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./home.css">
+    <link rel="stylesheet" href="../component/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Trang Chính</title>
 </head>
 
 <body>
-    <!-- Nút đăng xuất -->
-    <div class="btn_logout">
-        <form method="post" action="../logout.php">
-            <input type="submit" value="Đăng Xuất">
-        </form>
-    </div>
+    <?php include '../component/header.php'; ?>
     <!-- Vai trò của user -->
     <?php if ($role == 'user') : ?>
     <div class="content_form">
@@ -162,9 +156,9 @@ if ($role == 'admin') {
 
         function validateCardNumber() {
             var cardNumber = $('#card_number').val();
-            var pattern = /^\d{20}$/; // Chỉ chứa 20 chữ số
-            if (!pattern.test(cardNumber)) {
-                toastr.error('Số thẻ phải gồm 20 chữ số');
+            var length = cardNumber.length;
+            if (length > 20) {
+                toastr.error('Số thẻ phải nhỏ hơn hoặc bằng 20 chữ số');
                 return false;
             }
             return true;
@@ -179,16 +173,6 @@ if ($role == 'admin') {
             return true;
         }
 
-        // function validateExpiryDate() {
-        //     var expiryDate = $('#expiry_date').val();
-        //     var today = new Date().toISOString().split('T')[0]; // Ngày hiện tại
-        //     if (expiryDate < today) {
-        //         toastr.error('Ngày hết hạn không được nhỏ hơn ngày hiện tại');
-        //         return false;
-        //     }
-        //     return true;
-        // }
-
         function validateAccountName() {
             var accountName = $('#account_name').val();
             if (!accountName) {
@@ -200,9 +184,9 @@ if ($role == 'admin') {
 
         function validateFirstName() {
             var firstName = $('#first_name').val();
-            var pattern = /^[A-Za-z]+$/; // Chỉ chứa chữ cái không dấu
-            if (!pattern.test(firstName)) {
-                toastr.error('Tên phải không chứa dấu');
+            var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
+            if (!pattern.test(firstName) || firstName.startsWith(' ')) {
+                toastr.error('Tên phải không chứa dấu cách ở đầu và không có dấu');
                 return false;
             }
             return true;
@@ -210,9 +194,9 @@ if ($role == 'admin') {
 
         function validateLastName() {
             var lastName = $('#last_name').val();
-            var pattern = /^[A-Za-z]+$/; // Chỉ chứa chữ cái không dấu
-            if (!pattern.test(lastName)) {
-                toastr.error('Họ phải không chứa dấu');
+            var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
+            if (!pattern.test(lastName) || lastName.startsWith(' ')) {
+                toastr.error('Họ phải không chứa dấu cách ở đầu và không có dấu');
                 return false;
             }
             return true;

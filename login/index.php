@@ -29,7 +29,7 @@ if (isset($_SESSION['user_id'])) {
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
-
+            <p>Chưa có tài khoản <a style="color: red" href="/register">Đăng ký</a></p>
             <div class="g-recaptcha" data-sitekey="6LcyFyAqAAAAANh0qK4OqyUOvtykK-GC-lSbLIES"></div>
             <input type="submit" value="Đăng Nhập">
         </form>
@@ -41,6 +41,9 @@ if (isset($_SESSION['user_id'])) {
             if (isset($_SESSION['error_login'])) {
                 echo "toastr.error('" . $_SESSION['error_login'] . "');";
                 unset($_SESSION['error_login']);
+            } else if (isset($_SESSION['success_register'])) {
+                echo "toastr.success('" . $_SESSION['success_register'] . "');";
+                unset($_SESSION['success_register']);
             }
             ?>
     });

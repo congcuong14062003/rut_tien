@@ -5,6 +5,12 @@ body {
     margin: 0;
     padding: 0;
 }
+/* .header_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+} */
 .content_form {
     display: flex;
     padding: 20px;
@@ -13,10 +19,10 @@ body {
 }
 .btn_logout {
     width: 100px;
-    margin-left: 20px;
 }
 .btn_logout input {
     width: 100% !important;
+    margin: 0 !important;
 }
 
 .container {
