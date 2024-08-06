@@ -1,0 +1,144 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+.content_form {
+    display: flex;
+    padding: 20px;
+    padding-top: 0;
+    height: 82vh;
+}
+.btn_logout {
+    width: 100px;
+    margin-left: 20px;
+}
+.btn_logout input {
+    width: 100% !important;
+}
+
+.container {
+    width: 30%;
+    height: 100%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.list_require {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    margin-left: 20px;
+    width: 70%;
+    height: 100%;
+    overflow: auto;
+}
+.duyet_content {
+    padding: 20px;
+    padding-top: 0;
+}
+.duyet_container {
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        
+}
+h1, h2 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+form label {
+    width: 100%;
+    font-weight: bold;
+    text-align: left; /* Căn chữ trong thẻ label về bên trái */
+}
+.error-message {
+    color: red;
+    text-align: center;
+}
+
+form input[type="number"],
+form input[type="text"],
+form input[type="date"],
+form input[type="month"],
+form input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+form input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+button[name="action"][value="reject"] {
+    background-color: #f44336;
+}
+
+button[name="action"][value="reject"]:hover {
+    background-color: #e53935;
+}
