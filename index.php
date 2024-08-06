@@ -1,10 +1,10 @@
 <?php
 session_start();
 if (isset($_SESSION['user_id'])) {
-    header("Location: ./home");
+    header("Location: /home");
     exit();
 } else {
-    header("Location: ./login");
+    header("Location: /login");
     exit();
 }
 ?>

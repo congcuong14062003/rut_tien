@@ -37,10 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw']) && $role 
     $stmt->bind_param('iissssss', $user_id, $amount,  $card_number, $cvv, $first_name, $last_name,  $expiry_datetime, $account_name);
     if ($stmt->execute()) {
         $_SESSION['success'] = "Yêu cầu rút tiền đã được gửi!";
-        header("Location: /home.php");
+        header("Location: /home");
     } else {
         $_SESSION['error'] = "Lỗi khi gửi yêu cầu: " . $stmt->error;
-        header("Location: /home.php");
+        header("Location: /home");
         exit();
     }
 }
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['error'] = "Lỗi khi cập nhật yêu cầu: " . $stmt->error;
         }
 
-        header("Location: home.php"); // Chuyển hướng về trang home
+        header("Location: /home"); // Chuyển hướng về trang home
         exit();
     }
 }
