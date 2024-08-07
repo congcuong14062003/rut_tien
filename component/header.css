@@ -2,14 +2,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px;
+    height: 60px;
+    padding: 0 20px;
+    background-color: #343a40;
+    border-bottom: 1px solid #fff;
 }
-form input[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
+.user_infor a {
+    color: #fff;
+    text-decoration: none;
 }
 
-form input[type="submit"]:hover {
-    background-color: #45a049;
+.balance {
+    color: #fff;
+    font-size: 18px;
 }

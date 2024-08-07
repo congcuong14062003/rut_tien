@@ -1,27 +1,9 @@
+<?php include '../component/header.php'; ?>
 <?php
-session_start();
-include '../db.php';
-
-// Kiểm tra nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
-if (!isset($_SESSION['user_id'])) {
-    header("Location: /login");
-    exit();
-}
-
 // Xử lý form gửi dữ liệu
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_wallet_address = $_POST['wallet_address'];
     $secondary_password = $_POST['secondary_password'];
-
-    // Lấy mật khẩu cấp hai từ cơ sở dữ liệu
-    $user_id = $_SESSION['user_id'];
-    $query = "SELECT second_password FROM users WHERE id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('i', $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
-
     // Kiểm tra mật khẩu cấp hai
     if ($secondary_password == $user["second_password"]) {
         // Cập nhật địa chỉ ví
@@ -40,15 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: /profile");
     exit();
 }
-
-// Lấy mật khẩu cấp hai hiện tại từ cơ sở dữ liệu
-$user_id = $_SESSION['user_id'];
-$query = "SELECT second_password FROM users WHERE id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param('i', $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -57,15 +30,18 @@ $user = $result->fetch_assoc();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/index.css">
     <link rel="stylesheet" href="../component/header.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="../component/sidebar.css">
+    <link rel="stylesheet" href="./profile.css">
     <title>Đổi Địa Chỉ Ví</title>
 </head>
 
 <body>
-    <a href="/profile" style="margin-left: 20px">
-        <- Quay lại trang cá nhân</a>
+
+    <div class="container_boby">
+        <?php include '../component/sidebar.php'; ?>
+        <div class="content_right">
             <div class="container">
                 <h1>Đổi Địa Chỉ Ví</h1>
                 <?php if (empty($user['second_password'])) : ?>
@@ -89,22 +65,8 @@ $user = $result->fetch_assoc();
                 </form>
                 <?php endif; ?>
             </div>
-            <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-            <script>
-            $(document).ready(function() {
-                <?php if (isset($_SESSION['success_update'])) : ?>
-                toastr.success("<?php echo $_SESSION['success_update']; ?>");
-                <?php unset($_SESSION['success_update']); ?>
-                <?php elseif (isset($_SESSION['error_update'])) : ?>
-                toastr.error("<?php echo $_SESSION['error_update']; ?>");
-                <?php unset($_SESSION['error_update']); ?>
-                <?php endif; ?>
-            });
-            </script>
+        </div>
+    </div>
 </body>
 
 </html>
