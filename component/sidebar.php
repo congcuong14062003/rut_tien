@@ -15,7 +15,7 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                         <div class="sb-nav-link-icon"><i class="fas fa-id-card"></i></div>
                         Danh sách thẻ
                     </a>
-                    <a class="nav-link <?php echo ($current_page == 'addcard') ? 'active' : ''; ?>" href="/addcard">
+                    <a class="nav-link <?php echo ($current_page == 'add-card') ? 'active' : ''; ?>" href="/add-card">
                         <div class="sb-nav-link-icon"><i class="fas fa-plus-circle"></i></div>
                         Add thẻ
                     </a>
