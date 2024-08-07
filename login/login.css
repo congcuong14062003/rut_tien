@@ -34,6 +34,11 @@ label {
     text-align: left;
     font-weight: bold;
 }
+.g-recaptcha {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
 
 input[type="text"],
 input[type="password"] {
@@ -46,7 +51,7 @@ input[type="password"] {
 }
 
 /* Đặt kiểu cho nút submit */
-button[type="submit"] {
+input[type="submit"] {
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -57,6 +62,6 @@ button[type="submit"] {
     width: 100%;
 }
 
-button[type="submit"]:hover {
+input[type="submit"]:hover {
     background-color: #45a049;
 }

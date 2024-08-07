@@ -12,7 +12,7 @@ if (isset($_SESSION['user_id'])) {
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="./login.css">
+    <link rel="stylesheet" href="login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Đăng Nhập</title>
     <script src='https://www.google.com/recaptcha/api.js' async defer></script>
