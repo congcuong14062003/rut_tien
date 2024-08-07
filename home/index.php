@@ -20,6 +20,18 @@
 
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        <?php
+            if (isset($_SESSION['success_login'])) {
+                echo "toastr.success('" . $_SESSION['success_login'] . "');";
+                unset($_SESSION['success_login']);
+            } 
+            ?>
+    });
+    </script>
 </body>
 
 </html>

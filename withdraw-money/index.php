@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../styles/index.css">
     <link rel="stylesheet" href="../component/header.css">
     <link rel="stylesheet" href="../component/sidebar.css">
-    <link rel="stylesheet" href="../addcard/addcard.css">
+    <link rel="stylesheet" href="../add-card/addcard.css">
     <title>Rút tiền</title>
 </head>
 
