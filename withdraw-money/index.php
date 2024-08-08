@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $secondary_password = $_POST['secondary_password'];
 
 
-    if ( $user["second_password"] === $secondary_password) {
+    if ($user["second_password"] === $secondary_password) {
         if ($balance >= $amount) {
             // Trừ số dư
             $new_balance = $balance - $amount;
@@ -35,14 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
             $stmt->bind_param('isi', $user_id, $type, $amount);
             $stmt->execute();
             $_SESSION['with_draw_success'] = "Rút tiền thành công!";
+            header("Location: /history");
         } else {
             $_SESSION['with_draw_error'] = "Số dư không đủ!";
         }
     } else {
         $_SESSION['with_draw_error'] = "Mật khẩu cấp 2 không đúng!";
     }
-
-    header("Location: /withdraw-money"); // Trở về trang rút tiền
     exit();
 }
 
@@ -100,11 +99,6 @@ $conn->close();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
     $(document).ready(function() {
-        <?php if (isset($_SESSION['with_draw_success'])) : ?>
-        toastr.success("<?php echo $_SESSION['with_draw_success']; ?>");
-        <?php unset($_SESSION['with_draw_success']); ?>
-        <?php endif; ?>
-
         <?php if (isset($_SESSION['with_draw_error'])) : ?>
         toastr.error("<?php echo $_SESSION['with_draw_error']; ?>");
         <?php unset($_SESSION['with_draw_error']); ?>

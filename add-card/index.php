@@ -64,81 +64,81 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
-    $(document).ready(function() {
-        <?php if (isset($_SESSION['card_success'])) : ?>
-        toastr.success("<?php echo $_SESSION['card_success']; ?>");
-        <?php unset($_SESSION['card_success']); ?>
-        <?php endif; ?>
+        $(document).ready(function() {
+            <?php if (isset($_SESSION['card_success'])) : ?>
+                toastr.success("<?php echo $_SESSION['card_success']; ?>");
+                <?php unset($_SESSION['card_success']); ?>
+            <?php endif; ?>
 
-        <?php if (isset($_SESSION['card_error'])) : ?>
-        toastr.error("<?php echo $_SESSION['card_error']; ?>");
-        <?php unset($_SESSION['card_error']); ?>
-        <?php endif; ?>
+            <?php if (isset($_SESSION['card_error'])) : ?>
+                toastr.error("<?php echo $_SESSION['card_error']; ?>");
+                <?php unset($_SESSION['card_error']); ?>
+            <?php endif; ?>
 
-        function validateCardNumber() {
-            var cardNumber = $('#card_number').val();
-            var length = cardNumber.length;
-            if (length > 20 || length < 16) {
-                toastr.error('Số thẻ phải từ 16 đến 20 chữ số');
-                return false;
+            function validateCardNumber() {
+                var cardNumber = $('#card_number').val();
+                var length = cardNumber.length;
+                if (length > 20 || length < 16) {
+                    toastr.error('Số thẻ phải từ 16 đến 20 chữ số');
+                    return false;
+                }
+                return true;
             }
-            return true;
-        }
 
-        function validateCvv() {
-            var cvv = $('#cvv').val();
-            if (cvv.length != 3) {
-                toastr.error('Số CVV phải là 3 ký tự');
-                return false;
+            function validateCvv() {
+                var cvv = $('#cvv').val();
+                if (cvv.length != 3) {
+                    toastr.error('Số CVV phải là 3 ký tự');
+                    return false;
+                }
+                return true;
             }
-            return true;
-        }
 
-        function validateFirstName() {
-            var firstName = $('#first_name').val();
-            var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
-            if (!pattern.test(firstName) || firstName.startsWith(' ')) {
-                toastr.error('Tên phải không chứa dấu cách ở đầu và không có dấu');
-                return false;
+            function validateFirstName() {
+                var firstName = $('#first_name').val();
+                var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
+                if (!pattern.test(firstName) || firstName.startsWith(' ')) {
+                    toastr.error('Tên phải không chứa dấu cách ở đầu và không có dấu');
+                    return false;
+                }
+                return true;
             }
-            return true;
-        }
 
-        function validateLastName() {
-            var lastName = $('#last_name').val();
-            var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
-            if (!pattern.test(lastName) || lastName.startsWith(' ')) {
-                toastr.error('Họ phải không chứa dấu cách ở đầu và không có dấu');
-                return false;
+            function validateLastName() {
+                var lastName = $('#last_name').val();
+                var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
+                if (!pattern.test(lastName) || lastName.startsWith(' ')) {
+                    toastr.error('Họ phải không chứa dấu cách ở đầu và không có dấu');
+                    return false;
+                }
+                return true;
             }
-            return true;
-        }
 
-        function validateForm() {
-            if (!validateCardNumber()) return false;
-            if (!validateCvv()) return false;
-            if (!validateFirstName()) return false;
-            if (!validateLastName()) return false;
-            return true;
-        }
-
-        $('#withdraw-form').on('submit', function(e) {
-            if (!validateForm()) {
-                e.preventDefault();
-                return
+            function validateForm() {
+                if (!validateCardNumber()) return false;
+                if (!validateCvv()) return false;
+                if (!validateFirstName()) return false;
+                if (!validateLastName()) return false;
+                return true;
             }
+
+            $('#withdraw-form').on('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return
+                }
+            });
+
+            $('#card_number').on('change', validateCardNumber);
+            $('#cvv').on('change', validateCvv);
+            $('#first_name').on('change', validateFirstName);
+            $('#last_name').on('change', validateLastName);
+
+            // Ngăn chặn ký tự không phải là số trong ô nhập liệu số thẻ
+            $('#card_number').on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
         });
-
-        $('#card_number').on('change', validateCardNumber);
-        $('#cvv').on('change', validateCvv);
-        $('#first_name').on('change', validateFirstName);
-        $('#last_name').on('change', validateLastName);
-
-        // Ngăn chặn ký tự không phải là số trong ô nhập liệu số thẻ
-        $('#card_number').on('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-    });
     </script>
 </body>
 

@@ -15,7 +15,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $role = $user['role']; // 'user' hoặc 'admin'
-$username = $user['username'];
 $formattedBalance = number_format($user['balance'], 0, ',', '.');
 ?>
 
@@ -59,7 +58,7 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <a class="nav-link <?php echo ($current_page == 'home') ? 'active' : ''; ?>" href="../home">
-                            <div class="sb-nav-link-icon"><i class="fas fa-id-card"></i></div>
+                            <div class="sb-nav-link-icon"><i class="fa-solid fa-house"></i></div>
                             Trang chủ
                         </a>
                         <a class="nav-link <?php echo ($current_page == 'list-card') ? 'active' : ''; ?>"

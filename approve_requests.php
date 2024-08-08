@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && isset($_POST['request_id'])) {
         $request_id = $_POST['request_id'];
         $status = $_POST['action'] === 'approve' ? '200' : '201';
-        
+
         $stmt = $conn->prepare("UPDATE payment_requests SET status = ? WHERE id = ?");
         $stmt->bind_param("si", $status, $request_id);
         $stmt->execute();
@@ -58,18 +58,18 @@ if (isset($_GET['id'])) {
     $stmt->execute();
     $result = $stmt->get_result();
     $request = $result->fetch_assoc();
-    ?>
-<h2>Chi tiết yêu cầu</h2>
-<form method="post">
-    Số tiền: <?php echo htmlspecialchars($request['amount']); ?><br>
-    Số thẻ: <?php echo htmlspecialchars(substr($request['card_number'], 0, 8) . "****"); ?><br>
-    Firstname: <?php echo htmlspecialchars($request['first_name']); ?><br>
-    Lastname: <?php echo htmlspecialchars($request['last_name']); ?><br>
-    Ngày hết hạn: <?php echo htmlspecialchars($request['expiry_date']); ?><br>
-    <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request_id); ?>">
-    <input type="submit" name="action" value="approve">
-    <input type="submit" name="action" value="reject">
-</form>
+?>
+    <h2>Chi tiết yêu cầu</h2>
+    <form method="post">
+        Số tiền: <?php echo htmlspecialchars($request['amount']); ?><br>
+        Số thẻ: <?php echo htmlspecialchars(substr($request['card_number'], 0, 8) . "****"); ?><br>
+        Firstname: <?php echo htmlspecialchars($request['first_name']); ?><br>
+        Lastname: <?php echo htmlspecialchars($request['last_name']); ?><br>
+        Ngày hết hạn: <?php echo htmlspecialchars($request['expiry_date']); ?><br>
+        <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request_id); ?>">
+        <input type="submit" name="action" value="approve">
+        <input type="submit" name="action" value="reject">
+    </form>
 <?php
 }
 ?>

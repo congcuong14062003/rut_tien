@@ -1,65 +1,65 @@
 <?php include '../component/header.php'; ?>
+
 <?php
+// Kết nối cơ sở dữ liệu
 
-$username = $user['username'];
-$balance = $user['balance'];
-$wallet_address = $user['wallet_address'];
-$user_id = $user['id'];
+// Lấy thông tin từ URL
+$id_card = isset($_GET['id_card']) ? $_GET['id_card'] : '';
 
-// Định dạng địa chỉ ví thành toàn bộ dấu sao
-function formatWalletAddress($address)
-{
-    return str_repeat('*', strlen($address));
-}
-
-$formatted_wallet_address = formatWalletAddress($wallet_address);
-
-// Lấy danh sách các thẻ của người dùng
-$cards_query = "SELECT * FROM tbl_card WHERE user_id = ?";
-$stmt = $conn->prepare($cards_query);
-$stmt->bind_param('i', $user_id);
-$stmt->execute();
-$cards_result = $stmt->get_result();
+// Khai báo biến danh sách thẻ
 $cards = [];
-while ($card = $cards_result->fetch_assoc()) {
-    $cards[] = $card;
+$selected_card_id = $id_card; // ID thẻ sẽ được chọn tự động nếu có
+
+// Lấy thông tin thẻ từ cơ sở dữ liệu nếu có id_card
+if ($id_card) {
+    $query = "SELECT * FROM tbl_card WHERE id_card = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $id_card);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $card = $result->fetch_assoc();
+    $stmt->close();
+} else {
+    // Nếu không có id_card, lấy tất cả các thẻ của người dùng
+    $cards_query = "SELECT * FROM tbl_card WHERE user_id = ?";
+    $stmt = $conn->prepare($cards_query);
+    $stmt->bind_param('i', $user_id);
+    $stmt->execute();
+    $cards_result = $stmt->get_result();
+    while ($card = $cards_result->fetch_assoc()) {
+        $cards[] = $card;
+    }
+    $stmt->close();
 }
-$stmt->close();
 
 // Xử lý form rút tiền
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $amount = $_POST['amount'];
-    $secondary_password = $_POST['secondary_password'];
     $card_id = $_POST['card_id'];
+    $otp = $_POST['otp'];
 
-    // Kiểm tra mật khẩu cấp 2
-    if ($user["second_password"] === $secondary_password) {
-        if ($balance >= $amount) {
-            // Trừ số dư
-            $new_balance = $balance - $amount;
-            $update_balance_query = "UPDATE users SET balance = ? WHERE id = ?";
-            $stmt = $conn->prepare($update_balance_query);
-            $stmt->bind_param('ii', $new_balance, $user_id);
-            $stmt->execute();
+    // Thêm giao dịch vào bảng lịch sử với ngày hiện tại
+    $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card, otp) VALUES (?, ?, ?, NOW(), NOW(), ?, ?)";
+    $stmt = $conn->prepare($history_query);
+    $type = 'Rút tiền từ thẻ';
+    $stmt->bind_param('isiis', $user_id, $type, $amount, $card_id, $otp);
+    if ($stmt->execute()) {
+        // Cập nhật tổng số tiền đã rút trong bảng tbl_card
+        $update_query = "UPDATE tbl_card SET total_amount_success = total_amount_success + ? WHERE id_card = ?";
+        $update_stmt = $conn->prepare($update_query);
+        $update_stmt->bind_param('ii', $amount, $card_id);
+        $update_stmt->execute();
+        $update_stmt->close();
 
-            // Thêm giao dịch vào bảng lịch sử với ngày hiện tại
-            $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card) VALUES (?, ?, ?, NOW(), NOW(), ?)";
-            $stmt = $conn->prepare($history_query);
-            $type = 'Rút tiền về ví';
-            $stmt->bind_param('isii', $user_id, $type, $amount, $card_id);
-            $stmt->execute();
-            $_SESSION['with_draw_success'] = "Rút tiền thành công!";
-        } else {
-            $_SESSION['with_draw_error'] = "Số dư không đủ!";
-        }
+        $_SESSION['with_draw_visa_success'] = "Rút tiền thành công!";
+        header('Location: /history');
     } else {
-        $_SESSION['with_draw_error'] = "Mật khẩu cấp 2 không đúng!";
+        $_SESSION['with_draw_error'] = "Rút tiền thất bại!";
     }
-
-    header("Location: /withdraw-money"); // Trở về trang rút tiền
-    exit();
+    $stmt->close();
 }
 
+// Đóng kết nối
 $conn->close();
 ?>
 
@@ -95,18 +95,40 @@ $conn->close();
             <div class="container">
                 <h1 class="title">Rút tiền từ thẻ</h1>
                 <form id="withdraw-form" method="post" action="">
-                    <label for="card_id">Chọn thẻ:</label>
+                    <label for="card_id">Số thẻ:</label>
                     <select id="card_id" name="card_id" required>
+                        <option value="" disabled selected>Chọn thẻ</option>
+                        <?php if ($id_card): ?>
+                        <option value="<?php echo $card['id_card']; ?>"
+                            data-name="<?php echo htmlspecialchars($card['firstName'] . ' ' . $card['lastName']); ?>"
+                            data-expiry_date="<?php echo htmlspecialchars($card['expDate']); ?>"
+                            data-cvv="<?php echo htmlspecialchars($card['cvv']); ?>" selected>
+                            <?php echo htmlspecialchars($card['card_number']); ?>
+                        </option>
+                        <?php else: ?>
                         <?php foreach ($cards as $card): ?>
-                        <option value="<?php echo $card['id_card']; ?>">
+                        <option value="<?php echo $card['id_card']; ?>"
+                            data-name="<?php echo htmlspecialchars($card['firstName'] . ' ' . $card['lastName']); ?>"
+                            data-expiry_date="<?php echo htmlspecialchars($card['expDate']); ?>"
+                            data-cvv="<?php echo htmlspecialchars($card['cvv']); ?>">
                             <?php echo htmlspecialchars($card['card_number']); ?>
                         </option>
                         <?php endforeach; ?>
+                        <?php endif; ?>
                     </select>
+                    <label for="name">Tên chủ thẻ:</label>
+                    <input type="text" id="name" name="name" disabled
+                        <?php echo $id_card ? 'value="' . htmlspecialchars($card['firstName'] . ' ' . $card['lastName']) . '"' : ''; ?>>
+                    <label for="expiry_date">Ngày hết hạn:</label>
+                    <input type="text" id="expiry_date" name="expiry_date" disabled
+                        <?php echo $id_card ? 'value="' . htmlspecialchars($card['expDate']) . '"' : ''; ?>>
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" name="cvv" disabled
+                        <?php echo $id_card ? 'value="' . htmlspecialchars($card['cvv']) . '"' : ''; ?>>
                     <label for="amount">Số tiền muốn rút:</label>
                     <input type="number" id="amount" name="amount" required>
-                    <label for="secondary_password">Mật khẩu cấp 2:</label>
-                    <input type="password" id="secondary_password" name="secondary_password" required>
+                    <label for="otp">Nhập mã OTP:</label>
+                    <input type="password" id="otp" name="otp" required>
                     <input type="submit" name="withdraw" value="Rút tiền">
                 </form>
             </div>
@@ -116,10 +138,17 @@ $conn->close();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
     $(document).ready(function() {
-        <?php if (isset($_SESSION['with_draw_success'])) : ?>
-        toastr.success("<?php echo $_SESSION['with_draw_success']; ?>");
-        <?php unset($_SESSION['with_draw_success']); ?>
-        <?php endif; ?>
+        $('#card_id').on('change', function() {
+            var selectedOption = $(this).find('option:selected');
+            var name = selectedOption.data('name');
+            var expiry_date = selectedOption.data('expiry_date');
+            var cvv = selectedOption.data('cvv');
+
+            $('#name').val(name);
+            $('#expiry_date').val(expiry_date);
+            $('#cvv').val(cvv);
+        });
+
 
         <?php if (isset($_SESSION['with_draw_error'])) : ?>
         toastr.error("<?php echo $_SESSION['with_draw_error']; ?>");

@@ -8,7 +8,7 @@ $current_page = basename($_SERVER['REQUEST_URI']);
             <div class="sb-sidenav-menu">
                 <div class="nav">
                     <a class="nav-link <?php echo ($current_page == 'home') ? 'active' : ''; ?>" href="../home">
-                        <div class="sb-nav-link-icon"><i class="fas fa-id-card"></i></div>
+                        <div class="sb-nav-link-icon"><i class="fa-solid fa-house"></i></div>
                         Trang chủ
                     </a>
                     <a class="nav-link <?php echo ($current_page == 'list-card') ? 'active' : ''; ?>" href="/list-card">

@@ -55,30 +55,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="container">
                 <h1>Đổi Mật Khẩu Cấp Hai</h1>
                 <?php if (empty($user['second_password'])) : ?>
-                <!-- Form thiết lập mật khẩu cấp hai -->
-                <form method="post" action="">
-                    <div class="form-group">
-                        <label for="new_secondary_password">Mật khẩu cấp hai mới:</label>
-                        <input type="password" class="form-control" id="new_secondary_password"
-                            name="new_secondary_password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Thiết Lập</button>
-                </form>
+                    <!-- Form thiết lập mật khẩu cấp hai -->
+                    <form method="post" action="">
+                        <div class="form-group">
+                            <label for="new_secondary_password">Mật khẩu cấp hai mới:</label>
+                            <input type="password" class="form-control" id="new_secondary_password"
+                                name="new_secondary_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Thiết Lập</button>
+                    </form>
                 <?php else : ?>
-                <!-- Form đổi mật khẩu cấp hai -->
-                <form method="post" action="">
-                    <div class="form-group">
-                        <label for="current_secondary_password">Mật khẩu cấp hai hiện tại:</label>
-                        <input type="password" class="form-control" id="current_secondary_password"
-                            name="current_secondary_password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="new_secondary_password">Mật khẩu cấp hai mới:</label>
-                        <input type="password" class="form-control" id="new_secondary_password"
-                            name="new_secondary_password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Cập Nhật</button>
-                </form>
+                    <!-- Form đổi mật khẩu cấp hai -->
+                    <form method="post" action="">
+                        <div class="form-group">
+                            <label for="current_secondary_password">Mật khẩu cấp hai hiện tại:</label>
+                            <input type="password" class="form-control" id="current_secondary_password"
+                                name="current_secondary_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_secondary_password">Mật khẩu cấp hai mới:</label>
+                            <input type="password" class="form-control" id="new_secondary_password"
+                                name="new_secondary_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập Nhật</button>
+                    </form>
                 <?php endif; ?>
             </div>
         </div>

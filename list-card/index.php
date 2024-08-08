@@ -28,6 +28,7 @@
                             <th>Ngày Hết Hạn</th>
                             <th>Trạng Thái</th>
                             <th>Tổng Tiền Đã Rút</th>
+                            <th>Hành Động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,10 +73,11 @@
                                         <td>{$row['expDate']}</td>
                                         <td>{$statusText}</td>
                                         <td>{$formattedAmount} VND</td>
+                                        <td><a href='/withdraw-visa?id_card={$row['id_card']}' class='btn-withdraw'>Rút tiền</a></td>
                                     </tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='5'>Không có dữ liệu</td></tr>";
+                            echo "<tr><td colspan='6'>Không có dữ liệu</td></tr>";
                         }
 
                         $stmt->close();
@@ -89,10 +91,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
     $(document).ready(function() {
-        <?php if (isset($_SESSION['card_success'])) ?>
+        <?php if (isset($_SESSION['card_success'])) : ?>
         toastr.success("<?php echo $_SESSION['card_success']; ?>");
         <?php unset($_SESSION['card_success']); ?>
-    })
+        <?php endif; ?>
+    });
     </script>
 </body>
 

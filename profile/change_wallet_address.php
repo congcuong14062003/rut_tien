@@ -45,24 +45,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="container">
                 <h1>Đổi Địa Chỉ Ví</h1>
                 <?php if (empty($user['second_password'])) : ?>
-                <!-- Hiển thị liên kết đến trang thiết lập mật khẩu cấp hai -->
-                <p>Vui lòng <a href="./change_password_second.php">thiết lập mật khẩu cấp hai</a> trước khi thay đổi địa
-                    chỉ
-                    ví.</p>
+                    <!-- Hiển thị liên kết đến trang thiết lập mật khẩu cấp hai -->
+                    <p>Vui lòng <a href="./change_password_second.php">thiết lập mật khẩu cấp hai</a> trước khi thay đổi địa
+                        chỉ
+                        ví.</p>
                 <?php else : ?>
-                <!-- Form cập nhật địa chỉ ví -->
-                <form method="post" action="">
-                    <div class="form-group">
-                        <label for="wallet_address">Địa chỉ ví mới:</label>
-                        <input type="text" class="form-control" id="wallet_address" name="wallet_address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="secondary_password">Mật khẩu cấp hai:</label>
-                        <input type="password" class="form-control" id="secondary_password" name="secondary_password"
-                            required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Cập Nhật</button>
-                </form>
+                    <!-- Form cập nhật địa chỉ ví -->
+                    <form method="post" action="">
+                        <div class="form-group">
+                            <label for="wallet_address">Địa chỉ ví mới:</label>
+                            <input type="text" class="form-control" id="wallet_address" name="wallet_address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="secondary_password">Mật khẩu cấp hai:</label>
+                            <input type="password" class="form-control" id="secondary_password" name="secondary_password"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cập Nhật</button>
+                    </form>
                 <?php endif; ?>
             </div>
         </div>

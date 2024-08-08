@@ -87,16 +87,16 @@ $request = $result->fetch_assoc();
         </table>
 
         <?php if ($request['status'] == 99) : ?>
-        <div class="actions">
-            <form method="post" action="./home/home_action.php" style="display:inline;">
-                <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
-                <button type="submit" name="action" value="approve">Duyệt</button>
-            </form>
-            <form method="post" action="./home/home_action.php" style="display:inline;">
-                <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
-                <button type="submit" name="action" value="reject" class="reject">Từ chối</button>
-            </form>
-        </div>
+            <div class="actions">
+                <form method="post" action="./home/home_action.php" style="display:inline;">
+                    <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
+                    <button type="submit" name="action" value="approve">Duyệt</button>
+                </form>
+                <form method="post" action="./home/home_action.php" style="display:inline;">
+                    <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
+                    <button type="submit" name="action" value="reject" class="reject">Từ chối</button>
+                </form>
+            </div>
         <?php endif; ?>
     </div>
 </body>

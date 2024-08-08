@@ -1,4 +1,6 @@
 <?php include '../component/header.php'; ?>
+<?php include '../component/formatCardNumber.php'; ?>
+<?php include '../component/formatAmount.php'; ?>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -34,32 +36,24 @@
                     </thead>
                     <tbody>
                         <?php
-                        // Kết nối cơ sở dữ liệu và lấy Lịch sử giao dịch
-                        $query = "SELECT * FROM tbl_history WHERE user_id = ?";
+                        // Kết nối cơ sở dữ liệu và lấy Lịch sử giao dịch với số thẻ
+                        $query = "SELECT h.*, c.card_number FROM tbl_history h 
+                                  LEFT JOIN tbl_card c ON h.id_card = c.id_card 
+                                  WHERE h.user_id = ?";
                         $stmt = $conn->prepare($query);
                         $stmt->bind_param('i', $user_id);
                         $stmt->execute();
                         $result = $stmt->get_result();
+                        
 
-                        // Hàm định dạng số thẻ
-                        function formatCardNumber($cardNumber) {
-                            $firstFour = substr($cardNumber, 0, 4);
-                            $lastFour = substr($cardNumber, -4);
-                            $hiddenPart = str_repeat('*', strlen($cardNumber) - 8);
-                            return $firstFour . $hiddenPart . $lastFour;
-                        }
-
-                        // Hàm định dạng số tiền
-                        function formatAmount($amount) {
-                            return number_format($amount, 0, ',', '.');
-                        }
 
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
+                                $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ") ? formatCardNumber($row['card_number']) : '';
                                 echo "<tr>
-                                        <td>{$row['id_history']}</td>
+                                        <td><a href='/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
                                         <td>{$row['type']}</td>
-                                        <td></td>
+                                        <td>{$formattedCardNumber}</td>
                                         <td>" . formatAmount($row['amount']) . " VND</td>
                                         <td>{$row['transaction_date']}</td>
                                         <td>{$row['updated_at']}</td>
@@ -81,9 +75,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
     $(document).ready(function() {
-        <?php if (isset($_SESSION['card_success'])): ?>
-        toastr.success("<?php echo $_SESSION['card_success']; ?>");
-        <?php unset($_SESSION['card_success']); ?>
+        <?php if (isset($_SESSION['with_draw_success'])) : ?>
+        toastr.success("<?php echo $_SESSION['with_draw_success']; ?>");
+        <?php unset($_SESSION['with_draw_success']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['with_draw_visa_success'])) : ?>
+        toastr.success("<?php echo $_SESSION['with_draw_visa_success']; ?>");
+        <?php unset($_SESSION['with_draw_visa_success']); ?>
         <?php endif; ?>
     });
     </script>

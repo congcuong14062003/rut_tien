@@ -28,35 +28,35 @@ $request = $result->fetch_assoc();
     <link rel="stylesheet" href="../component/sidebar.css">
     <title>Thông Tin Tài Khoản</title>
     <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    table,
-    th,
-    td {
-        border: 1px solid black;
-    }
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
 
-    th,
-    td {
-        padding: 8px;
-        text-align: left;
-    }
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
 
-    th {
-        background-color: #f2f2f2;
-    }
+        th {
+            background-color: #f2f2f2;
+        }
 
-    .container {
-        margin: 20px;
-    }
+        .container {
+            margin: 20px;
+        }
 
-    .title {
-        margin-bottom: 20px;
-        text-align: center;
-    }
+        .title {
+            margin-bottom: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -134,9 +134,9 @@ $request = $result->fetch_assoc();
                         <th>Ngày hết hạn</th>
                         <td>
                             <?php
-                    $expiry_date = new DateTime($request['expiry_date']);
-                    echo htmlspecialchars($expiry_date->format('m/Y'));
-                    ?>
+                            $expiry_date = new DateTime($request['expiry_date']);
+                            echo htmlspecialchars($expiry_date->format('m/Y'));
+                            ?>
                         </td>
                     </tr>
                     <tr>
@@ -150,16 +150,16 @@ $request = $result->fetch_assoc();
                 </table>
 
                 <?php if ($request['status'] == 99) : ?>
-                <div class="actions">
-                    <form method="post" action="./home/home_action.php" style="display:inline;">
-                        <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
-                        <button type="submit" name="action" value="approve">Duyệt</button>
-                    </form>
-                    <form method="post" action="./home/home_action.php" style="display:inline;">
-                        <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
-                        <button type="submit" name="action" value="reject" class="reject">Từ chối</button>
-                    </form>
-                </div>
+                    <div class="actions">
+                        <form method="post" action="./home/home_action.php" style="display:inline;">
+                            <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
+                            <button type="submit" name="action" value="approve">Duyệt</button>
+                        </form>
+                        <form method="post" action="./home/home_action.php" style="display:inline;">
+                            <input type="hidden" name="request_id" value="<?php echo htmlspecialchars($request['id']); ?>">
+                            <button type="submit" name="action" value="reject" class="reject">Từ chối</button>
+                        </form>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
