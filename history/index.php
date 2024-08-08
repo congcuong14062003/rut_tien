@@ -1,4 +1,5 @@
 <?php include '../component/header.php'; ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -8,38 +9,9 @@
     <link rel="stylesheet" href="../styles/index.css">
     <link rel="stylesheet" href="../component/header.css">
     <link rel="stylesheet" href="../component/sidebar.css">
+    <link rel="stylesheet" href="./history.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Lịch sử giao dịch</title>
-    <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    table,
-    th,
-    td {
-        border: 1px solid black;
-    }
-
-    th,
-    td {
-        padding: 8px;
-        text-align: left;
-    }
-
-    th {
-        background-color: #f2f2f2;
-    }
-
-    .container {
-        margin: 20px;
-    }
-
-    .title {
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    </style>
 </head>
 
 <body>
@@ -53,43 +25,68 @@
                         <tr>
                             <th>Mã Giao Dịch</th>
                             <th>Loại Giao Dịch</th>
-                            <th>Ngày Giao Dịch</th>
                             <th>Số Thẻ</th>
                             <th>Số Tiền Giao Dịch</th>
+                            <th>Thời Gian Giao Dịch</th>
+                            <th>Thời Gian Cập Nhật</th>
                             <th>Trạng Thái</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>GD12345</td>
-                            <td>Rút Tiền</td>
-                            <td>2024-08-07</td>
-                            <td>1234 5678 9012 3456</td>
-                            <td>2,000,000 VND</td>
-                            <td>Hoàn Thành</td>
-                        </tr>
-                        <tr>
-                            <td>GD12346</td>
-                            <td>Chuyển Khoản</td>
-                            <td>2024-08-06</td>
-                            <td>9876 5432 1098 7654</td>
-                            <td>1,500,000 VND</td>
-                            <td>Đang Xử Lý</td>
-                        </tr>
-                        <tr>
-                            <td>GD12347</td>
-                            <td>Rút Tiền</td>
-                            <td>2024-08-05</td>
-                            <td>1234 5678 9012 3456</td>
-                            <td>3,000,000 VND</td>
-                            <td>Hoàn Thành</td>
-                        </tr>
+                        <?php
+                        // Kết nối cơ sở dữ liệu và lấy Lịch sử giao dịch
+                        $query = "SELECT * FROM tbl_history WHERE user_id = ?";
+                        $stmt = $conn->prepare($query);
+                        $stmt->bind_param('i', $user_id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+
+                        // Hàm định dạng số thẻ
+                        function formatCardNumber($cardNumber) {
+                            $firstFour = substr($cardNumber, 0, 4);
+                            $lastFour = substr($cardNumber, -4);
+                            $hiddenPart = str_repeat('*', strlen($cardNumber) - 8);
+                            return $firstFour . $hiddenPart . $lastFour;
+                        }
+
+                        // Hàm định dạng số tiền
+                        function formatAmount($amount) {
+                            return number_format($amount, 0, ',', '.');
+                        }
+
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<tr>
+                                        <td>{$row['id_history']}</td>
+                                        <td>{$row['type']}</td>
+                                        <td></td>
+                                        <td>" . formatAmount($row['amount']) . " VND</td>
+                                        <td>{$row['transaction_date']}</td>
+                                        <td>{$row['updated_at']}</td>
+                                        <td>{$row['status']}</td>
+                                    </tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='7'>Không có dữ liệu</td></tr>";
+                        }
+
+                        $stmt->close();
+                        ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        <?php if (isset($_SESSION['card_success'])): ?>
+        toastr.success("<?php echo $_SESSION['card_success']; ?>");
+        <?php unset($_SESSION['card_success']); ?>
+        <?php endif; ?>
+    });
+    </script>
 </body>
 
 </html>

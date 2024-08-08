@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "Admin";
 $password = "MyNewPass";
-$dbname = "aaaaa";
+$dbname = "payment_management";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 

@@ -73,7 +73,10 @@ form input[type="submit"] {
 form input[type="submit"]:hover {
     background-color: #45a049;
 }
-
+.logout_side_bar {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 .side_bar_active {
     position: fixed;
     left: -300px; /* Ẩn sidebar bên trái khi chưa mở */

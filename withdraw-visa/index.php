@@ -4,6 +4,7 @@
 $username = $user['username'];
 $balance = $user['balance'];
 $wallet_address = $user['wallet_address'];
+$user_id = $user['id'];
 
 // Định dạng địa chỉ ví thành toàn bộ dấu sao
 function formatWalletAddress($address)
@@ -13,13 +14,26 @@ function formatWalletAddress($address)
 
 $formatted_wallet_address = formatWalletAddress($wallet_address);
 
+// Lấy danh sách các thẻ của người dùng
+$cards_query = "SELECT * FROM tbl_card WHERE user_id = ?";
+$stmt = $conn->prepare($cards_query);
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$cards_result = $stmt->get_result();
+$cards = [];
+while ($card = $cards_result->fetch_assoc()) {
+    $cards[] = $card;
+}
+$stmt->close();
+
 // Xử lý form rút tiền
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $amount = $_POST['amount'];
     $secondary_password = $_POST['secondary_password'];
+    $card_id = $_POST['card_id'];
 
-
-    if ( $user["second_password"] === $secondary_password) {
+    // Kiểm tra mật khẩu cấp 2
+    if ($user["second_password"] === $secondary_password) {
         if ($balance >= $amount) {
             // Trừ số dư
             $new_balance = $balance - $amount;
@@ -29,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
             $stmt->execute();
 
             // Thêm giao dịch vào bảng lịch sử với ngày hiện tại
-            $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at) VALUES (?, ?, ?, NOW(), NOW())";
+            $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card) VALUES (?, ?, ?, NOW(), NOW(), ?)";
             $stmt = $conn->prepare($history_query);
             $type = 'Rút tiền về ví';
-            $stmt->bind_param('isi', $user_id, $type, $amount);
+            $stmt->bind_param('isii', $user_id, $type, $amount, $card_id);
             $stmt->execute();
             $_SESSION['with_draw_success'] = "Rút tiền thành công!";
         } else {
@@ -46,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     exit();
 }
 
-$stmt->close();
 $conn->close();
 ?>
 
@@ -63,7 +76,8 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Rút tiền</title>
     <style>
-    input {
+    input,
+    select {
         width: 100%;
         padding: 10px;
         margin: 10px 0;
@@ -79,14 +93,16 @@ $conn->close();
         <?php include '../component/sidebar.php'; ?>
         <div class="content_right">
             <div class="container">
-                <h1 class="title">Rút tiền về tài khoản</h1>
+                <h1 class="title">Rút tiền từ thẻ</h1>
                 <form id="withdraw-form" method="post" action="">
-                    <label for="balance">Số dư tài khoản:</label>
-                    <input disabled type="text" id="balance" name="balance"
-                        value="<?php echo htmlspecialchars($user['balance']); ?>">
-                    <label for="wallet_address">Địa chỉ ví nhận:</label>
-                    <input type="text" id="wallet_address" name="wallet_address"
-                        value="<?php echo htmlspecialchars($formatted_wallet_address); ?>" disabled>
+                    <label for="card_id">Chọn thẻ:</label>
+                    <select id="card_id" name="card_id" required>
+                        <?php foreach ($cards as $card): ?>
+                        <option value="<?php echo $card['id_card']; ?>">
+                            <?php echo htmlspecialchars($card['card_number']); ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
                     <label for="amount">Số tiền muốn rút:</label>
                     <input type="number" id="amount" name="amount" required>
                     <label for="secondary_password">Mật khẩu cấp 2:</label>

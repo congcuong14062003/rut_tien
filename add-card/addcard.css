@@ -55,11 +55,7 @@
     text-align: center;
     }
     
-    form input[type="number"],
-    form input[type="text"],
-    form input[type="date"],
-    form input[type="month"]
- {
+    form input{
     width: 100%;
     padding: 10px;
     margin: 10px 0;

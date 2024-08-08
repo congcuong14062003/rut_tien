@@ -26,14 +26,19 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                     <a class="nav-link <?php echo ($current_page == 'withdraw-money') ? 'active' : ''; ?>"
                         href="/withdraw-money">
                         <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                        Rút tiền
+                        Rút tiền về tài khoản
+                    </a>
+                    <a class="nav-link <?php echo ($current_page == 'withdraw-visa') ? 'active' : ''; ?>"
+                        href="/withdraw-visa">
+                        <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                        Rút tiền từ thẻ
                     </a>
                     <a class="nav-link <?php echo ($current_page == 'profile') ? 'active' : ''; ?>" href="/profile">
                         <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                         Trang cá nhân
                     </a>
                     <form class="logout" method="post" action="../logout.php">
-                        <input type="submit" value="Đăng Xuất">
+                        <input class="logout_side_bar" type="submit" value="Đăng Xuất">
                     </form>
                 </div>
             </div>

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../component/header.css">
     <link rel="stylesheet" href="../component/sidebar.css">
     <link rel="stylesheet" href="./listcard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Danh sách thẻ</title>
 </head>
 
@@ -46,15 +47,30 @@
                             return $firstFour . $hiddenPart . $lastFour;
                         }
 
+                        // Hàm chuyển đổi trạng thái ENUM
+                        function getStatusText($status) {
+                            switch ($status) {
+                                case '0':
+                                    return 'Init';
+                                case '1':
+                                    return 'Thành công';
+                                case '2':
+                                    return 'Lỗi';
+                                default:
+                                    return 'Không xác định';
+                            }
+                        }
+
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 $formattedCardNumber = formatCardNumber($row['card_number']);
                                 $formattedAmount = number_format($row['total_amount_success'], 0, ',', '.');
+                                $statusText = getStatusText($row['status']);
                                 echo "<tr>
                                         <td>{$row['firstName']} {$row['lastName']}</td>
                                         <td>{$formattedCardNumber}</td>
                                         <td>{$row['expDate']}</td>
-                                        <td>{$row['status']}</td>
+                                        <td>{$statusText}</td>
                                         <td>{$formattedAmount} VND</td>
                                     </tr>";
                             }
@@ -69,6 +85,15 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        <?php if (isset($_SESSION['card_success'])) ?>
+        toastr.success("<?php echo $_SESSION['card_success']; ?>");
+        <?php unset($_SESSION['card_success']); ?>
+    })
+    </script>
 </body>
 
 </html>

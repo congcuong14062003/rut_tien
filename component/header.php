@@ -16,6 +16,7 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $role = $user['role']; // 'user' hoặc 'admin'
 $username = $user['username'];
+$formattedBalance = number_format($user['balance'], 0, ',', '.');
 ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -44,7 +45,7 @@ $username = $user['username'];
     <div class="balance">
         <?php
         if (isset($_SESSION['user_id'])) {
-            echo 'Số dư: ' . htmlspecialchars($user['balance'] . ' đ');
+            echo 'Số dư: ' . htmlspecialchars($formattedBalance . ' đ');
         }
         ?>
     </div>
@@ -78,7 +79,12 @@ $username = $user['username'];
                         <a class="nav-link <?php echo ($current_page == 'withdraw-money') ? 'active' : ''; ?>"
                             href="/withdraw-money">
                             <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                            Rút tiền
+                            Rút tiền về tài khoản
+                        </a>
+                        <a class="nav-link <?php echo ($current_page == 'withdraw-visa') ? 'active' : ''; ?>"
+                            href="/withdraw-visa">
+                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                            Rút tiền từ thẻ
                         </a>
                         <a class="nav-link <?php echo ($current_page == 'profile') ? 'active' : ''; ?>" href="/profile">
                             <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>

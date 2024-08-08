@@ -6,14 +6,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $card_number = $_POST['card_number'];
     $expiry_date = $_POST['expiry_date'];
     $cvv = $_POST['cvv'];
+
     $sql = "INSERT INTO tbl_card (user_id, card_number, expDate, cvv, firstName, lastName) 
             VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-
     $stmt->bind_param("isssss", $user_id, $card_number, $expiry_date, $cvv, $first_name, $last_name);
 
     if ($stmt->execute()) {
         $_SESSION['card_success'] = 'Thêm thẻ mới thành công';
+        header("Location: /list-card");
+        exit();
     } else {
         $_SESSION['card_error'] = 'Thêm thẻ mới thất bại';
     }
@@ -22,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -67,7 +68,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (isset($_SESSION['card_success'])) : ?>
         toastr.success("<?php echo $_SESSION['card_success']; ?>");
         <?php unset($_SESSION['card_success']); ?>
-        <?php elseif (isset($_SESSION['card_error'])) : ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['card_error'])) : ?>
         toastr.error("<?php echo $_SESSION['card_error']; ?>");
         <?php unset($_SESSION['card_error']); ?>
         <?php endif; ?>
@@ -114,10 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         function validateForm() {
             if (!validateCardNumber()) return false;
             if (!validateCvv()) return false;
-            if (!validateAccountName()) return false;
             if (!validateFirstName()) return false;
             if (!validateLastName()) return false;
-
             return true;
         }
 
@@ -136,14 +137,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Ngăn chặn ký tự không phải là số trong ô nhập liệu số thẻ
         $('#card_number').on('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
-        });
-
-        // Ngăn chặn ký tự không phải là số trong ô nhập liệu số tiền và ký tự đầu tiên phải lớn hơn 0
-        $('#amount').on('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            if (this.value.length > 0 && this.value.charAt(0) === '0') {
-                this.value = this.value.replace(/^0+/, '');
-            }
         });
     });
     </script>
