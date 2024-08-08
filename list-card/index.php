@@ -1,4 +1,5 @@
 <?php include '../component/header.php'; ?>
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -8,38 +9,8 @@
     <link rel="stylesheet" href="../styles/index.css">
     <link rel="stylesheet" href="../component/header.css">
     <link rel="stylesheet" href="../component/sidebar.css">
+    <link rel="stylesheet" href="./listcard.css">
     <title>Danh sách thẻ</title>
-    <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    table,
-    th,
-    td {
-        border: 1px solid black;
-    }
-
-    th,
-    td {
-        padding: 8px;
-        text-align: left;
-    }
-
-    th {
-        background-color: #f2f2f2;
-    }
-
-    .container {
-        margin: 20px;
-    }
-
-    .title {
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    </style>
 </head>
 
 <body>
@@ -59,28 +30,45 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Ví dụ về dữ liệu -->
-                        <tr>
-                            <td>Nguyễn Văn A</td>
-                            <td>1234 5678 9123 4567</td>
-                            <td>12/2025</td>
-                            <td>Hoạt Động</td>
-                            <td>10,000,000 VND</td>
-                        </tr>
-                        <tr>
-                            <td>Trần Thị B</td>
-                            <td>9876 5432 1098 7654</td>
-                            <td>08/2023</td>
-                            <td>Đã Khóa</td>
-                            <td>5,000,000 VND</td>
-                        </tr>
-                        <!-- Thêm nhiều dòng hơn ở đây -->
+                        <?php
+                        // Kết nối cơ sở dữ liệu và lấy danh sách thẻ
+                        $query = "SELECT * FROM tbl_card WHERE user_id = ?";
+                        $stmt = $conn->prepare($query);
+                        $stmt->bind_param('i', $user_id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+
+                        // Hàm định dạng số thẻ
+                        function formatCardNumber($cardNumber) {
+                            $firstFour = substr($cardNumber, 0, 4);
+                            $lastFour = substr($cardNumber, -4);
+                            $hiddenPart = str_repeat('*', strlen($cardNumber) - 8);
+                            return $firstFour . $hiddenPart . $lastFour;
+                        }
+
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                $formattedCardNumber = formatCardNumber($row['card_number']);
+                                $formattedAmount = number_format($row['total_amount_success'], 0, ',', '.');
+                                echo "<tr>
+                                        <td>{$row['firstName']} {$row['lastName']}</td>
+                                        <td>{$formattedCardNumber}</td>
+                                        <td>{$row['expDate']}</td>
+                                        <td>{$row['status']}</td>
+                                        <td>{$formattedAmount} VND</td>
+                                    </tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='5'>Không có dữ liệu</td></tr>";
+                        }
+
+                        $stmt->close();
+                        ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-
 </body>
 
 </html>

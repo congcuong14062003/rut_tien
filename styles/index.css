@@ -35,8 +35,12 @@ input[type="submit"] {
 
 /* Media Query cho thiết bị di động */
 @media (max-width: 1023px) {
-    #layoutSidenav {
-        display: none !important;
+    .container {
+        margin: 100px auto 0 auto !important;
+        width: 95% !important;
+    }
+    button {
+        margin: 5px 0 !important;
     }
     .container_boby {
         flex-direction: column; /* Để các phần tử trong container sắp xếp theo cột */
@@ -45,9 +49,6 @@ input[type="submit"] {
         font-size: 20px;
         display: block;
         margin-right: 20px;
-    }
-    .content_right {
-        /* Điều chỉnh các thuộc tính cho phần tử content_right trên thiết bị di động nếu cần */
     }
 
     input[type="submit"] {
@@ -62,10 +63,6 @@ input[type="submit"] {
         flex-direction: row; /* Để các phần tử trong container sắp xếp theo hàng trên máy tính để bàn */
     }
 
-    .content_right {
-        /* Điều chỉnh các thuộc tính cho phần tử content_right trên máy tính để bàn nếu cần */
-    }
-  
     input[type="submit"] {
         font-size: 16px; /* Đặt lại kích thước font cho nút submit trên máy tính để bàn */
         padding: 10px; /* Đặt lại padding cho nút submit trên máy tính để bàn */
