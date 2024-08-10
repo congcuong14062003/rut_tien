@@ -25,7 +25,11 @@ if (isset($_SESSION['user_id'])) {
         <form method="post" action="login_action.php">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
-
+            <?php
+            if (isset($_SESSION['success_register'])) {
+                echo $_SESSION['success_register'];
+            }
+            ?>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <p>Chưa có tài khoản <a style="color: red" href="/register">Đăng ký</a></p>
@@ -33,22 +37,23 @@ if (isset($_SESSION['user_id'])) {
             <input type="submit" value="Đăng Nhập">
         </form>
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
     $(document).ready(function() {
         <?php
             if (isset($_SESSION['error_login'])) {
                 echo "toastr.error('" . $_SESSION['error_login'] . "');";
                 unset($_SESSION['error_login']);
-            } else if (isset($_SESSION['success_register'])) {
+            }
+            if (isset($_SESSION['success_register'])) {
                 echo "toastr.success('" . $_SESSION['success_register'] . "');";
                 unset($_SESSION['success_register']);
             }
             ?>
     });
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 </body>
 
 </html>

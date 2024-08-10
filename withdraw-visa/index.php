@@ -10,6 +10,17 @@ $id_card = isset($_GET['id_card']) ? $_GET['id_card'] : '';
 $cards = [];
 $selected_card_id = $id_card; // ID thẻ sẽ được chọn tự động nếu có
 
+// Lấy tất cả các thẻ của người dùng
+$cards_query = "SELECT * FROM tbl_card WHERE user_id = ?";
+$stmt = $conn->prepare($cards_query);
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$cards_result = $stmt->get_result();
+while ($card = $cards_result->fetch_assoc()) {
+    $cards[] = $card;
+}
+$stmt->close();
+
 // Lấy thông tin thẻ từ cơ sở dữ liệu nếu có id_card
 if ($id_card) {
     $query = "SELECT * FROM tbl_card WHERE id_card = ?";
@@ -19,30 +30,18 @@ if ($id_card) {
     $result = $stmt->get_result();
     $card = $result->fetch_assoc();
     $stmt->close();
-} else {
-    // Nếu không có id_card, lấy tất cả các thẻ của người dùng
-    $cards_query = "SELECT * FROM tbl_card WHERE user_id = ?";
-    $stmt = $conn->prepare($cards_query);
-    $stmt->bind_param('i', $user_id);
-    $stmt->execute();
-    $cards_result = $stmt->get_result();
-    while ($card = $cards_result->fetch_assoc()) {
-        $cards[] = $card;
-    }
-    $stmt->close();
 }
 
 // Xử lý form rút tiền
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $amount = $_POST['amount'];
     $card_id = $_POST['card_id'];
-    $otp = $_POST['otp'];
 
     // Thêm giao dịch vào bảng lịch sử với ngày hiện tại
-    $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card, otp) VALUES (?, ?, ?, NOW(), NOW(), ?, ?)";
+    $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card) VALUES (?, ?, ?, NOW(), NOW(), ?)";
     $stmt = $conn->prepare($history_query);
     $type = 'Rút tiền từ thẻ';
-    $stmt->bind_param('isiis', $user_id, $type, $amount, $card_id, $otp);
+    $stmt->bind_param('isii', $user_id, $type, $amount, $card_id);
     if ($stmt->execute()) {
         // Cập nhật tổng số tiền đã rút trong bảng tbl_card
         $update_query = "UPDATE tbl_card SET total_amount_success = total_amount_success + ? WHERE id_card = ?";
@@ -50,6 +49,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
         $update_stmt->bind_param('ii', $amount, $card_id);
         $update_stmt->execute();
         $update_stmt->close();
+
+        // Cập nhật số dư của người dùng
+        $balance_update_query = "UPDATE users SET balance = balance + ? WHERE id = ?";
+        $balance_stmt = $conn->prepare($balance_update_query);
+        $balance_stmt->bind_param('ii', $amount, $user_id);
+        $balance_stmt->execute();
+        $balance_stmt->close();
+
+        // Thêm vào bảng lịch sử biến động số dư
+        $history_balance_query = "INSERT INTO tbl_history_balance (balance_fluctuation, user_id, id_history) VALUES (?, ?, ?)";
+        $history_stmt = $conn->prepare($history_balance_query);
+        $balance_fluctuation = $amount; // Số tiền rút tiền được coi là biến động số dư
+        $history_id = $stmt->insert_id; // Lấy ID của giao dịch vừa thêm
+        $history_stmt->bind_param('iii', $balance_fluctuation, $user_id, $history_id);
+        $history_stmt->execute();
+        $history_stmt->close();
 
         $_SESSION['with_draw_visa_success'] = "Rút tiền thành công!";
         header('Location: /history');
@@ -98,23 +113,15 @@ $conn->close();
                     <label for="card_id">Số thẻ:</label>
                     <select id="card_id" name="card_id" required>
                         <option value="" disabled selected>Chọn thẻ</option>
-                        <?php if ($id_card): ?>
-                        <option value="<?php echo $card['id_card']; ?>"
-                            data-name="<?php echo htmlspecialchars($card['firstName'] . ' ' . $card['lastName']); ?>"
-                            data-expiry_date="<?php echo htmlspecialchars($card['expDate']); ?>"
-                            data-cvv="<?php echo htmlspecialchars($card['cvv']); ?>" selected>
-                            <?php echo htmlspecialchars($card['card_number']); ?>
-                        </option>
-                        <?php else: ?>
                         <?php foreach ($cards as $card): ?>
                         <option value="<?php echo $card['id_card']; ?>"
                             data-name="<?php echo htmlspecialchars($card['firstName'] . ' ' . $card['lastName']); ?>"
                             data-expiry_date="<?php echo htmlspecialchars($card['expDate']); ?>"
-                            data-cvv="<?php echo htmlspecialchars($card['cvv']); ?>">
+                            data-cvv="<?php echo htmlspecialchars($card['cvv']); ?>"
+                            <?php echo $selected_card_id == $card['id_card'] ? 'selected' : ''; ?>>
                             <?php echo htmlspecialchars($card['card_number']); ?>
                         </option>
                         <?php endforeach; ?>
-                        <?php endif; ?>
                     </select>
                     <label for="name">Tên chủ thẻ:</label>
                     <input type="text" id="name" name="name" disabled
@@ -127,8 +134,8 @@ $conn->close();
                         <?php echo $id_card ? 'value="' . htmlspecialchars($card['cvv']) . '"' : ''; ?>>
                     <label for="amount">Số tiền muốn rút:</label>
                     <input type="number" id="amount" name="amount" required>
-                    <label for="otp">Nhập mã OTP:</label>
-                    <input type="password" id="otp" name="otp" required>
+                    <!-- <label for="otp">Nhập mã OTP:</label>
+                    <input type="password" id="otp" name="otp" required> -->
                     <input type="submit" name="withdraw" value="Rút tiền">
                 </form>
             </div>
@@ -149,7 +156,7 @@ $conn->close();
             $('#cvv').val(cvv);
         });
 
-
+        // Hiển thị thông báo nếu có
         <?php if (isset($_SESSION['with_draw_error'])) : ?>
         toastr.error("<?php echo $_SESSION['with_draw_error']; ?>");
         <?php unset($_SESSION['with_draw_error']); ?>

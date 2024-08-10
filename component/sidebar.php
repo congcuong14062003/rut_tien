@@ -33,6 +33,11 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                         <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
                         Rút tiền từ thẻ
                     </a>
+                    <a class="nav-link <?php echo ($current_page == 'history-balance') ? 'active' : ''; ?>"
+                        href="/history-balance">
+                        <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                        Lịch sử biến động số dư
+                    </a>
                     <a class="nav-link <?php echo ($current_page == 'profile') ? 'active' : ''; ?>" href="/profile">
                         <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                         Trang cá nhân

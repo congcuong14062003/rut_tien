@@ -37,12 +37,8 @@ if (isset($_SESSION['user_id'])) {
             if (isset($_SESSION['error_register'])) {
                 echo "toastr.error('" . $_SESSION['error_register'] . "');";
                 unset($_SESSION['error_register']);
-            }
-            // if (isset($_SESSION['success_register'])) {
-            //     echo "toastr.success('" . $_SESSION['success_register'] . "');";
-            //     unset($_SESSION['success_register']);
-            // }
-            // ?>
+            } 
+            ?>
     });
     </script>
 </body>

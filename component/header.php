@@ -44,7 +44,7 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
     <div class="balance">
         <?php
         if (isset($_SESSION['user_id'])) {
-            echo 'Số dư: ' . htmlspecialchars($formattedBalance . ' đ');
+            echo 'Số dư: ' . htmlspecialchars($formattedBalance . ' VND');
         }
         ?>
     </div>
@@ -84,6 +84,11 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
                             href="/withdraw-visa">
                             <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
                             Rút tiền từ thẻ
+                        </a>
+                        <a class="nav-link <?php echo ($current_page == 'history-balance') ? 'active' : ''; ?>"
+                            href="/history-balance">
+                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                            Lịch sử biến động số dư
                         </a>
                         <a class="nav-link <?php echo ($current_page == 'profile') ? 'active' : ''; ?>" href="/profile">
                             <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>

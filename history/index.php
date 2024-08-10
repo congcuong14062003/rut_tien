@@ -44,17 +44,20 @@
                         $stmt->bind_param('i', $user_id);
                         $stmt->execute();
                         $result = $stmt->get_result();
-                        
+
 
 
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
-                                $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ") ? formatCardNumber($row['card_number']) : '';
+                                $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Thêm thẻ") ? formatCardNumber($row['card_number']) : '';
+                                $amount = formatAmount($row['amount']);
+                                $amountWithUnit = !empty($row['amount']) ? $amount . " VND" : $amount; // Thêm "VND" chỉ khi số tiền không rỗng
+
                                 echo "<tr>
                                         <td><a href='/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
                                         <td>{$row['type']}</td>
                                         <td>{$formattedCardNumber}</td>
-                                        <td>" . formatAmount($row['amount']) . " VND</td>
+                                        <td>{$amountWithUnit}</td>
                                         <td>{$row['transaction_date']}</td>
                                         <td>{$row['updated_at']}</td>
                                         <td>{$row['status']}</td>
