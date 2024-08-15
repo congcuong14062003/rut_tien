@@ -1,6 +1,6 @@
 <?php
 $servername = "localhost";
-$username = "Admin";
+$username = "root";
 $password = "MyNewPass";
 $dbname = "payment_management";
 

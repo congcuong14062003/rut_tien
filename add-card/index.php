@@ -4,8 +4,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $card_number = $_POST['card_number'];
-    $expiry_date = $_POST['expiry_date'];
+    $expiry_month = $_POST['expiry_month'];
+    $expiry_year = $_POST['expiry_year'];
     $cvv = $_POST['cvv'];
+
+    $expiry_date = $expiry_month . '/' . $expiry_year; // Kết hợp tháng và năm thành định dạng MM/YY
 
     $sql = "INSERT INTO tbl_card (user_id, card_number, expDate, cvv, firstName, lastName) 
             VALUES (?, ?, ?, ?, ?, ?)";
@@ -32,11 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
     $stmt->bind_param("isis", $card_id, $otp, $user_id, $type);
 
     if ($stmt->execute()) {
-        // $_SESSION['otp_success'] = 'Xác nhận OTP thành công.';
         header("Location: /list-card");
         exit();
     } else {
-        // $_SESSION['otp_error'] = 'Xác nhận OTP thất bại';
     }
 
     $stmt->close();
@@ -71,8 +72,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
                     <input type="text" id="last_name" name="last_name" required>
                     <label for="card_number">Số thẻ:</label>
                     <input type="text" id="card_number" name="card_number" required>
-                    <label for="expiry_date">Ngày hết hạn:</label>
-                    <input type="month" id="expiry_date" name="expiry_date" required>
+                    <label for="expiry_month">Tháng hết hạn (MM):</label>
+                    <input type="text" id="expiry_month" name="expiry_month" required>
+                    <label for="expiry_year">Năm hết hạn (YY):</label>
+                    <input type="text" id="expiry_year" name="expiry_year" required>
                     <label for="cvv">Số CVV:</label>
                     <input type="text" id="cvv" name="cvv" required>
                     <input type="submit" name="add_card" value="Xác Nhận">
@@ -140,11 +143,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
             return true;
         }
 
+        function validateExpiryDate() {
+            var month = $('#expiry_month').val();
+            var year = $('#expiry_year').val();
+            if (!/^(0[1-9]|1[0-2])$/.test(month)) {
+                toastr.error('Tháng không hợp lệ. Chỉ nhập từ 01 đến 12');
+                return false;
+            }
+            if (!/^\d{2}$/.test(year)) {
+                toastr.error('Năm không hợp lệ. Chỉ nhập 2 số cuối của năm');
+                return false;
+            }
+            return true;
+        }
+
         function validateForm() {
             if (!validateCardNumber()) return false;
             if (!validateCvv()) return false;
             if (!validateFirstName()) return false;
             if (!validateLastName()) return false;
+            if (!validateExpiryDate()) return false;
             return true;
         }
 
@@ -159,9 +177,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
         $('#cvv').on('change', validateCvv);
         $('#first_name').on('change', validateFirstName);
         $('#last_name').on('change', validateLastName);
+        $('#expiry_month').on('change', validateExpiryDate);
+        $('#expiry_year').on('change', validateExpiryDate);
 
-        // Ngăn chặn ký tự không phải là số trong ô nhập liệu số thẻ
-        $('#card_number').on('input', function() {
+        // Ngăn chặn ký tự không phải là số trong ô nhập liệu số thẻ và CVV
+        $('#card_number, #cvv, #expiry_month, #expiry_year').on('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
     });

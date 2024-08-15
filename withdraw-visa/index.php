@@ -11,7 +11,7 @@ $cards = [];
 $selected_card_id = $id_card; // ID thẻ sẽ được chọn tự động nếu có
 
 // Lấy tất cả các thẻ của người dùng
-$cards_query = "SELECT * FROM tbl_card WHERE user_id = ?";
+$cards_query = "SELECT * FROM tbl_card WHERE user_id = ? AND status = '1'";
 $stmt = $conn->prepare($cards_query);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();

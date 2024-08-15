@@ -37,35 +37,42 @@
                 $result = $stmt->get_result();
                 if ($result->num_rows > 0) {
                     $row = $result->fetch_assoc();
-                    $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ") ? formatCardNumber($row['card_number']) : '';
+                    $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Thêm thẻ") ? formatCardNumber($row['card_number']) : '';
                     $wallet_address = $user['wallet_address'];
 
                     function formatWalletAddress($address)
                     {
-                    return str_repeat('*', strlen($address));
+                        return str_repeat('*', strlen($address));
                     }
-    
+
                     $formatted_wallet_address = formatWalletAddress($wallet_address);
-                ?>
+                    ?>
 
-                <label for="type">Loại giao dịch:</label>
-                <input disabled type="text" id="type" name="type" value="<?php echo htmlspecialchars($row['type']); ?>">
+                    <label for="type">Loại giao dịch:</label>
+                    <input disabled type="text" id="type" name="type" value="<?php echo htmlspecialchars($row['type']); ?>">
 
-                <label for="type">Số thẻ:</label>
-                <input disabled type="text" id="type" name=""
-                    value="<?php echo htmlspecialchars($formattedCardNumber); ?>">
-                <label for="type">Số tiên giao dịch:</label>
-                <input disabled type="text" id="type" name=""
-                    value="<?php echo htmlspecialchars(formatAmount($row['amount']) . " VND"); ?>">
-                <label for="type">Ví nhận tiền:</label>
-                <input disabled type="text" id="type" name=""
-                    value="<?php echo htmlspecialchars($formatted_wallet_address); ?>">
-                <label for="type">Thời gian giao dịch:</label>
-                <input disabled type="text" id="type" name=""
-                    value="<?php echo htmlspecialchars($row['updated_at']); ?>">
-                <label for="type">Trạng thái:</label>
-                <input disabled type="text" id="type" name="" value="<?php echo htmlspecialchars($row['status']); ?>">
-                <?php
+                    <?php if ($row['type'] === "Thêm thẻ" || $row['type'] === "Rút tiền từ thẻ"): ?>
+                        <label for="type">Số thẻ:</label>
+                        <input disabled type="text" id="type" name=""
+                            value="<?php echo htmlspecialchars($formattedCardNumber); ?>">
+                    <?php endif; ?>
+
+                    <?php if ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Rút tiền về ví"): ?>
+                        <label for="type">Số tiền giao dịch:</label>
+                        <input disabled type="text" id="type" name=""
+                            value="<?php echo htmlspecialchars(formatAmount($row['amount']) . ($row['amount'] ? " VND" : "")); ?>">
+                    <?php endif; ?>
+                    <?php if ($row['type'] === "Rút tiền về ví"): ?>
+                        <label for="type">Ví nhận tiền:</label>
+                        <input disabled type="text" id="type" name=""
+                            value="<?php echo htmlspecialchars($formatted_wallet_address); ?>">
+                    <?php endif; ?>
+                    <label for="type">Thời gian giao dịch:</label>
+                    <input disabled type="text" id="type" name=""
+                        value="<?php echo htmlspecialchars($row['updated_at']); ?>">
+                    <label for="type">Trạng thái:</label>
+                    <input disabled type="text" id="type" name="" value="<?php echo htmlspecialchars($row['status']); ?>">
+                    <?php
                 } else {
                     echo "<p>Không tìm thấy giao dịch.</p>";
                 }
@@ -79,9 +86,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
-    $(document).ready(function() {
-        // Optional: Add any JavaScript/jQuery code here
-    });
+        $(document).ready(function () {
+            // Optional: Add any JavaScript/jQuery code here
+        });
     </script>
 </body>
 

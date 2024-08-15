@@ -1,5 +1,4 @@
 <?php include '../component/header.php'; ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -52,11 +51,11 @@
                         function getStatusText($status) {
                             switch ($status) {
                                 case '0':
-                                    return 'Init';
+                                    return 'init';
                                 case '1':
-                                    return 'Thành công';
+                                    return 'active';
                                 case '2':
-                                    return 'Lỗi';
+                                    return 'inactive';
                                 default:
                                     return 'Không xác định';
                             }
@@ -72,9 +71,15 @@
                                         <td>{$formattedCardNumber}</td>
                                         <td>{$row['expDate']}</td>
                                         <td>{$statusText}</td>
-                                        <td>{$formattedAmount} VND</td>
-                                        <td><a href='/withdraw-visa?id_card={$row['id_card']}' class='btn-withdraw'>Rút tiền</a></td>
-                                    </tr>";
+                                        <td>{$formattedAmount} VND</td>";
+
+                                if ($row['status'] == '1') { // Check if status is 'active'
+                                    echo "<td><a href='/withdraw-visa?id_card={$row['id_card']}' class='btn-withdraw'>Rút tiền</a></td>";
+                                } else {
+                                    echo "<td></td>";
+                                }
+
+                                echo "</tr>";
                             }
                         } else {
                             echo "<tr><td colspan='6'>Không có dữ liệu</td></tr>";

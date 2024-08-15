@@ -102,6 +102,9 @@ $conn->close();
         <div class="content_right">
             <div class="container">
                 <h1 class="title">Rút tiền về tài khoản</h1>
+                <?php if (empty($user['wallet_address'])): ?>
+                <p style="text-align: center; margin: 20px">Vui lòng <a href="/profile">thiết lập địa chỉ ví</a> trước khi rút tiền.</p>
+                <?php else: ?>
                 <?php if (!isset($_SESSION['withdraw_requested'])): ?>
                 <form id="withdraw-form" method="post" action="">
                     <label for="balance">Số dư tài khoản:</label>
@@ -120,6 +123,7 @@ $conn->close();
                     <input type="password" id="secondary_password" name="secondary_password" required>
                     <input type="submit" name="confirm_withdraw" value="Xác nhận">
                 </form>
+                <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>

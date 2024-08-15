@@ -42,7 +42,7 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                         <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                         Trang cá nhân
                     </a>
-                    <form class="logout" method="post" action="../logout.php">
+                    <form class="logout" method="post" action="../logout/logout.php">
                         <input class="logout_side_bar" type="submit" value="Đăng Xuất">
                     </form>
                 </div>
