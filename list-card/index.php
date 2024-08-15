@@ -1,4 +1,6 @@
 <?php include '../component/header.php'; ?>
+
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -101,6 +103,10 @@
         <?php unset($_SESSION['card_success']); ?>
         <?php endif; ?>
     });
+     <?php if (isset($_SESSION['otp_success'])) : ?>
+        toastr.success("<?php echo $_SESSION['otp_success']; ?>");
+        <?php unset($_SESSION['otp_success']); ?>
+        <?php endif; ?>
     </script>
 </body>
 

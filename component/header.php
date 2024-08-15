@@ -1,11 +1,14 @@
 <?php
+ob_start(); // Bật bộ đệm đầu ra
 session_start();
 include '../db.php';
+
 // Kiểm tra nếu người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
 if (!isset($_SESSION['user_id'])) {
     header("Location: /login");
     exit();
 }
+
 // Lấy thông tin người dùng từ cơ sở dữ liệu
 $user_id = $_SESSION['user_id'];
 $query = "SELECT * FROM users WHERE id = ?";
@@ -32,27 +35,33 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
             <i class="fa-solid fa-bars"></i>
         </div>
         <div class="user_infor">
-            <a href="/profile">
-                <?php
-                if (isset($_SESSION['user_id'])) {
-                    echo 'Xin chào, ' . htmlspecialchars($user['username']);
-                }
-                ?>
-            </a>
+            <?php if ($role != 'admin') { ?>
+                <a href="/profile">
+                    <?php
+                    if (isset($_SESSION['user_id'])) {
+                        echo 'Xin chào, ' . htmlspecialchars($user['username']);
+                    }
+                    ?>
+                </a>
+            <?php } else { ?>
+                <span>Xin chào, <?php echo htmlspecialchars($user['username']); ?></span>
+            <?php } ?>
         </div>
     </div>
-    <div class="balance">
-        <?php
-        if (isset($_SESSION['user_id'])) {
-            echo 'Số dư: ' . htmlspecialchars($formattedBalance . ' VND');
-        }
-        ?>
-    </div>
+    <?php if ($role != 'admin') { ?>
+        <div class="balance">
+            <?php
+            if (isset($_SESSION['user_id'])) {
+                echo 'Số dư: ' . htmlspecialchars($formattedBalance . ' VND');
+            }
+            ?>
+        </div>
+    <?php } ?>
     <?php
     $current_page = basename($_SERVER['REQUEST_URI']);
     ?>
 
-    <div id="" class="side_bar_active">
+    <div id="user" class="side_bar_active">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
@@ -61,39 +70,59 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
                             <div class="sb-nav-link-icon"><i class="fa-solid fa-house"></i></div>
                             Trang chủ
                         </a>
-                        <a class="nav-link <?php echo ($current_page == 'list-card') ? 'active' : ''; ?>"
-                            href="/list-card">
-                            <div class="sb-nav-link-icon"><i class="fas fa-id-card"></i></div>
-                            Danh sách thẻ
-                        </a>
-                        <a class="nav-link <?php echo ($current_page == 'add-card') ? 'active' : ''; ?>"
-                            href="/add-card">
-                            <div class="sb-nav-link-icon"><i class="fas fa-plus-circle"></i></div>
-                            Add thẻ
-                        </a>
-                        <a class="nav-link <?php echo ($current_page == 'history') ? 'active' : ''; ?>" href="/history">
-                            <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
-                            Lịch sử giao dịch
-                        </a>
-                        <a class="nav-link <?php echo ($current_page == 'withdraw-money') ? 'active' : ''; ?>"
-                            href="/withdraw-money">
-                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                            Rút tiền về tài khoản
-                        </a>
-                        <a class="nav-link <?php echo ($current_page == 'withdraw-visa') ? 'active' : ''; ?>"
-                            href="/withdraw-visa">
-                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                            Rút tiền từ thẻ
-                        </a>
-                        <a class="nav-link <?php echo ($current_page == 'history-balance') ? 'active' : ''; ?>"
-                            href="/history-balance">
-                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                            Lịch sử biến động số dư
-                        </a>
-                        <a class="nav-link <?php echo ($current_page == 'profile') ? 'active' : ''; ?>" href="/profile">
-                            <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
-                            Trang cá nhân
-                        </a>
+                        <?php if ($role != 'admin') { ?>
+                            <a class="nav-link <?php echo ($current_page == 'list-card') ? 'active' : ''; ?>"
+                                href="/list-card">
+                                <div class="sb-nav-link-icon"><i class="fas fa-id-card"></i></div>
+                                Danh sách thẻ
+                            </a>
+                            <a class="nav-link <?php echo ($current_page == 'add-card') ? 'active' : ''; ?>"
+                                href="/add-card">
+                                <div class="sb-nav-link-icon"><i class="fas fa-plus-circle"></i></div>
+                                Add thẻ
+                            </a>
+                            <a class="nav-link <?php echo ($current_page == 'history') ? 'active' : ''; ?>" href="/history">
+                                <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
+                                Lịch sử giao dịch
+                            </a>
+                            <a class="nav-link <?php echo ($current_page == 'withdraw-money') ? 'active' : ''; ?>"
+                                href="/withdraw-money">
+                                <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                                Rút tiền về tài khoản
+                            </a>
+                            <a class="nav-link <?php echo ($current_page == 'withdraw-visa') ? 'active' : ''; ?>"
+                                href="/withdraw-visa">
+                                <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                                Rút tiền từ thẻ
+                            </a>
+                            <a class="nav-link <?php echo ($current_page == 'history-balance') ? 'active' : ''; ?>"
+                                href="/history-balance">
+                                <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                                Lịch sử biến động số dư
+                            </a>
+
+                            <a class="nav-link <?php echo ($current_page == 'profile') ? 'active' : ''; ?>" href="/profile">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
+                                Trang cá nhân
+                            </a>
+                        <?php } else { ?>
+                            <a class="nav-link" href="javascript:void(0);">
+                                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                                Quản lý user
+                            </a>
+                            <a class="nav-link" href="javascript:void(0);">
+                                <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
+                                Duyệt lệnh rút tiền thẻ
+                            </a>
+                            <a class="nav-link" href="javascript:void(0);">
+                                <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
+                                Duyệt lệnh rút tiền từ tài khoản
+                            </a>
+                            <a class="nav-link" href="javascript:void(0);">
+                                <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
+                                Duyệt add thẻ vào tài khoản
+                            </a>
+                        <?php } ?>
                         <form class="logout" method="post" action="../logout.php">
                             <input type="submit" value="Đăng Xuất">
                         </form>
@@ -105,19 +134,19 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const menuIcon = document.querySelector('.icon-mobile');
-    const sidebar = document.querySelector('.side_bar_active');
-    const overlay = document.getElementById('overlay');
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuIcon = document.querySelector('.icon-mobile');
+        const sidebar = document.querySelector('.side_bar_active');
+        const overlay = document.getElementById('overlay');
 
-    menuIcon.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-    });
+        menuIcon.addEventListener('click', function () {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
 
-    overlay.addEventListener('click', function() {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
+        overlay.addEventListener('click', function () {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
     });
-});
 </script>

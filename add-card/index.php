@@ -1,5 +1,6 @@
-<?php include '../component/header.php'; ?>
 <?php
+include '../component/header.php';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
@@ -29,15 +30,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
     $otp = $_POST['otp'];
     $card_id = $_SESSION['new_card_id'];
-    $type="Thêm thẻ";
+    $type = "Thêm thẻ";
     $sql = "INSERT INTO tbl_history (id_card, otp, user_id, type) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isis", $card_id, $otp, $user_id, $type);
 
     if ($stmt->execute()) {
+        $_SESSION['otp_success'] = 'Xác nhận OTP thành công. Thêm thẻ mới thành công.';
         header("Location: /list-card");
-        exit();
     } else {
+        $_SESSION['otp_error'] = 'Xác nhận OTP thất bại.';
+        header("Location: /add-card");
     }
 
     $stmt->close();
@@ -47,7 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
 
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -58,7 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Thông Tin Tài Khoản</title>
 </head>
-
 <body>
     <div class="container_boby">
         <?php include '../component/sidebar.php'; ?>
@@ -97,11 +98,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
         <?php if (isset($_SESSION['card_success'])) : ?>
         $('#otp-form').show(); // Hiển thị form nhập OTP
         $('#add-card-form').hide(); // Ẩn form thêm thẻ
+        toastr.success("<?php echo $_SESSION['card_success']; ?>");
+        <?php unset($_SESSION['card_success']); ?>
         <?php endif; ?>
 
         <?php if (isset($_SESSION['card_error'])) : ?>
         toastr.error("<?php echo $_SESSION['card_error']; ?>");
         <?php unset($_SESSION['card_error']); ?>
+        <?php endif; ?>
+
+       
+
+        <?php if (isset($_SESSION['otp_error'])) : ?>
+        toastr.error("<?php echo $_SESSION['otp_error']; ?>");
+        <?php unset($_SESSION['otp_error']); ?>
         <?php endif; ?>
 
         function validateCardNumber() {
@@ -187,5 +197,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
     });
     </script>
 </body>
-
 </html>
