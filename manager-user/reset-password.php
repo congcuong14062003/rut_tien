@@ -1,5 +1,14 @@
 <?php
 include '../component/header.php';
+?>
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Nếu không phải admin, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
+<?php
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_POST['user_id'];

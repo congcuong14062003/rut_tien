@@ -2,6 +2,27 @@
 <?php include '../component/formatCardNumber.php'; ?>
 <?php include '../component/formatAmount.php'; ?>
 
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+
+// Định nghĩa hàm getStatusText() nếu nó không có trong các tệp bao gồm
+function getStatusText($status) {
+    switch ($status) {
+        case '0':
+            return 'init';
+        case '1':
+            return 'thành công';
+        case '2':
+            return 'thất bại';
+        default:
+            return 'Không xác định';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -71,7 +92,7 @@
                     <input disabled type="text" id="type" name=""
                         value="<?php echo htmlspecialchars($row['updated_at']); ?>">
                     <label for="type">Trạng thái:</label>
-                    <input disabled type="text" id="type" name="" value="<?php echo htmlspecialchars($row['status']); ?>">
+                    <input disabled type="text" id="type" name="" value="<?php echo htmlspecialchars(getStatusText($row['status'])); ?>">
                     <?php
                 } else {
                     echo "<p>Không tìm thấy giao dịch.</p>";

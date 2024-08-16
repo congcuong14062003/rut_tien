@@ -1,6 +1,15 @@
-<?php include '../component/header.php'; ?>
-
-
+<?php include '../component/header.php';?>
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
+<?php
+include '../component/formatCardNumber.php';
+include '../component/formatAmount.php';
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -42,12 +51,12 @@
                         $result = $stmt->get_result();
 
                         // Hàm định dạng số thẻ
-                        function formatCardNumber($cardNumber) {
-                            $firstFour = substr($cardNumber, 0, 4);
-                            $lastFour = substr($cardNumber, -4);
-                            $hiddenPart = str_repeat('*', strlen($cardNumber) - 8);
-                            return $firstFour . $hiddenPart . $lastFour;
-                        }
+                        // function formatCardNumber($cardNumber) {
+                        //     $firstFour = substr($cardNumber, 0, 4);
+                        //     $lastFour = substr($cardNumber, -4);
+                        //     $hiddenPart = str_repeat('*', strlen($cardNumber) - 8);
+                        //     return $firstFour . $hiddenPart . $lastFour;
+                        // }
 
                         // Hàm chuyển đổi trạng thái ENUM
                         function getStatusText($status) {
@@ -55,9 +64,9 @@
                                 case '0':
                                     return 'init';
                                 case '1':
-                                    return 'active';
+                                    return 'thành công';
                                 case '2':
-                                    return 'inactive';
+                                    return 'thất bại';
                                 default:
                                     return 'Không xác định';
                             }
@@ -66,7 +75,7 @@
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 $formattedCardNumber = formatCardNumber($row['card_number']);
-                                $formattedAmount = number_format($row['total_amount_success'], 0, ',', '.');
+                                $formattedAmount = formatAmount($row['total_amount_success']);
                                 $statusText = getStatusText($row['status']);
                                 echo "<tr>
                                         <td>{$row['firstName']} {$row['lastName']}</td>

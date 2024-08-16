@@ -3,7 +3,13 @@ include '../component/header.php';
 include '../component/formatCardNumber.php';
 include '../component/formatAmount.php';
 ?>
-
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -55,12 +61,12 @@ include '../component/formatAmount.php';
                                 
                                 // Kiểm tra trạng thái và hiển thị giá trị tương ứng
                                 $statusText = '';
-                                if ($row['status'] == 0) {
+                                if ($row['status'] == '0') {
                                     $statusText = 'init';
-                                } elseif ($row['status'] == 1) {
-                                    $statusText = 'active';
-                                } elseif ($row['status'] == 2) {
-                                    $statusText = 'inactive';
+                                } elseif ($row['status'] == '1') {
+                                    $statusText = 'thành công';
+                                } elseif ($row['status'] == '2') {
+                                    $statusText = 'thất bại';
                                 }
 
                                 echo "<tr>

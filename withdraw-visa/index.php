@@ -1,5 +1,11 @@
 <?php include '../component/header.php'; ?>
-
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
 <?php
 // Kết nối cơ sở dữ liệu
 
@@ -51,22 +57,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
         $update_stmt->close();
 
         // Cập nhật số dư của người dùng
-        $balance_update_query = "UPDATE users SET balance = balance + ? WHERE id = ?";
-        $balance_stmt = $conn->prepare($balance_update_query);
-        $balance_stmt->bind_param('ii', $amount, $user_id);
-        $balance_stmt->execute();
-        $balance_stmt->close();
+        // $balance_update_query = "UPDATE users SET balance = balance + ? WHERE id = ?";
+        // $balance_stmt = $conn->prepare($balance_update_query);
+        // $balance_stmt->bind_param('ii', $amount, $user_id);
+        // $balance_stmt->execute();
+        // $balance_stmt->close();
 
         // Thêm vào bảng lịch sử biến động số dư
-        $history_balance_query = "INSERT INTO tbl_history_balance (balance_fluctuation, user_id, id_history) VALUES (?, ?, ?)";
-        $history_stmt = $conn->prepare($history_balance_query);
-        $balance_fluctuation = $amount; // Số tiền rút tiền được coi là biến động số dư
-        $history_id = $stmt->insert_id; // Lấy ID của giao dịch vừa thêm
-        $history_stmt->bind_param('iii', $balance_fluctuation, $user_id, $history_id);
-        $history_stmt->execute();
-        $history_stmt->close();
+        // $history_balance_query = "INSERT INTO tbl_history_balance (balance_fluctuation, user_id, id_history) VALUES (?, ?, ?)";
+        // $history_stmt = $conn->prepare($history_balance_query);
+        // $balance_fluctuation = $amount; // Số tiền rút tiền được coi là biến động số dư
+        // $history_id = $stmt->insert_id; // Lấy ID của giao dịch vừa thêm
+        // $history_stmt->bind_param('iii', $balance_fluctuation, $user_id, $history_id);
+        // $history_stmt->execute();
+        // $history_stmt->close();
 
-        $_SESSION['with_draw_visa_success'] = "Rút tiền thành công!";
+        $_SESSION['with_draw_visa_success'] = "Yêu cầu rút tiền từ thẻ về tài khoản thành công!";
         header('Location: /history');
     } else {
         $_SESSION['with_draw_error'] = "Rút tiền thất bại!";

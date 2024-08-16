@@ -27,12 +27,12 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                         <a class="nav-link <?php echo ($current_page == 'withdraw-money') ? 'active' : ''; ?>"
                             href="/withdraw-money">
                             <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                            Rút tiền về tài khoản
+                            Rút tiền từ tài khoản về ví
                         </a>
                         <a class="nav-link <?php echo ($current_page == 'withdraw-visa') ? 'active' : ''; ?>"
                             href="/withdraw-visa">
                             <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
-                            Rút tiền từ thẻ
+                            Rút tiền từ thẻ về tài khoản
                         </a>
                         <a class="nav-link <?php echo ($current_page == 'history-balance') ? 'active' : ''; ?>"
                             href="/history-balance">
@@ -49,13 +49,13 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                             <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                             Quản lý user
                         </a>
-                        <a class="nav-link" href="javascript:void(0);">
+                        <a class="nav-link <?php echo ($current_page == 'manager-card-withdraw') ? 'active' : ''; ?>" href="/manager-card-withdraw">
                             <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
-                            Duyệt lệnh rút tiền thẻ
+                            Duyệt lệnh rút tiền từ thẻ về tài khoản
                         </a>
-                        <a class="nav-link" href="javascript:void(0);">
+                        <a class="nav-link <?php echo ($current_page == 'manager-account-withdraw') ? 'active' : ''; ?>" href="/manager-account-withdraw">
                             <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
-                            Duyệt lệnh rút tiền từ tài khoản
+                            Duyệt lệnh rút tiền từ tài khoản về ví
                         </a>
                         <a class="nav-link <?php echo ($current_page == 'manager-card-user') ? 'active' : ''; ?>" href="/manager-card-user">
                             <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>

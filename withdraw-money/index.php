@@ -1,5 +1,11 @@
 <?php include '../component/header.php'; ?>
-
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
 <?php
 $username = $user['username'];
 $balance = $user['balance'];
@@ -37,22 +43,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_withdraw'])) 
             $stmt->execute();
 
             // Thêm giao dịch vào bảng lịch sử với ngày hiện tại
-            $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at) VALUES (?, ?, ?, NOW(), NOW())";
+            $history_query = "INSERT INTO tbl_history (user_id, type, amount, address_wallet, transaction_date, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())";
             $stmt = $conn->prepare($history_query);
             $type = 'Rút tiền về ví';
-            $stmt->bind_param('isi', $user_id, $type, $amount);
+            $stmt->bind_param('isis', $user_id, $type, $amount, $wallet_address);
             $stmt->execute();
 
             // Lấy id_history vừa được chèn vào
             $id_history = $stmt->insert_id;
 
             // Chèn vào bảng tbl_history_balance
-            $history_balance_query = "INSERT INTO tbl_history_balance (balance_fluctuation, user_id, id_history, transaction_date) VALUES (?, ?, ?, NOW())";
-            $stmt = $conn->prepare($history_balance_query);
-            $stmt->bind_param('iii', $amount, $user_id, $id_history);
-            $stmt->execute();
+            // $history_balance_query = "INSERT INTO tbl_history_balance (balance_fluctuation, user_id, id_history, transaction_date) VALUES (?, ?, ?, NOW())";
+            // $stmt = $conn->prepare($history_balance_query);
+            // $stmt->bind_param('iii', $amount, $user_id, $id_history);
+            // $stmt->execute();
 
-            $_SESSION['with_draw_success'] = "Rút tiền thành công!";
+            $_SESSION['with_draw_success'] = "Thực hiện yêu cầu rút tiền từ tài khoản thành công!";
             unset($_SESSION['withdraw_requested']); // Xóa dấu hiệu yêu cầu rút tiền
             header("Location: /history");
         } else {
@@ -101,7 +107,7 @@ $conn->close();
         <?php include '../component/sidebar.php'; ?>
         <div class="content_right container_form">
             <div class="container">
-                <h1 class="title">Rút tiền về tài khoản</h1>
+                <h1 class="title">Rút tiền từ tài khoản về ví</h1>
                 <?php if (empty($user['wallet_address'])): ?>
                 <p style="text-align: center; margin: 20px">Vui lòng <a href="/profile">thiết lập địa chỉ ví</a> trước khi rút tiền.</p>
                 <?php else: ?>

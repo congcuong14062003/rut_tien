@@ -1,7 +1,13 @@
 <?php include '../component/header.php'; ?>
 <?php include '../component/formatCardNumber.php'; ?>
 <?php include '../component/formatAmount.php'; ?>
-
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="vi">
 

@@ -1,5 +1,14 @@
 <?php
 include '../component/header.php';
+?>
+<?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
+<?php
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     $first_name = $_POST['first_name'];

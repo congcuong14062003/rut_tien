@@ -1,5 +1,12 @@
 <?php include '../component/header.php'; ?>
 <?php
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
+    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
+    header("Location: /no-permission");
+    exit();
+}
+?>
+<?php
 // Xử lý form gửi dữ liệu
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_wallet_address = $_POST['wallet_address'];
