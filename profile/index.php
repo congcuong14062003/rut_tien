@@ -18,7 +18,7 @@
     <!-- Header -->
     <div class="container_boby">
         <?php include '../component/sidebar.php'; ?>
-        <div class="content_right">
+        <div class="content_right container_form">
             <div class=" container">
                 <h1>Thông tin cá nhân</h1>
                 <label for="username">Tên người dùng:</label>

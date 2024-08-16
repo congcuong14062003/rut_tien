@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="container_boby">
         <?php include '../component/sidebar.php'; ?>
-        <div class="content_right">
+        <div class="content_right container_form">
             <div class="container">
                 <h1>Đổi Địa Chỉ Ví</h1>
                 <?php if (empty($user['second_password'])) : ?>

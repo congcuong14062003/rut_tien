@@ -59,6 +59,7 @@
 }
 .logout {
     margin-top: 20px;
+    margin: 0!important;
 }
 form input[type="submit"] {
     background-color: #4CAF50;

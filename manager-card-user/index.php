@@ -1,5 +1,33 @@
-<?php include '../component/header.php'; ?>
+<?php
+include '../component/header.php';
 
+// Xử lý hành động chấp nhận hoặc từ chối
+if (isset($_GET['action']) && isset($_GET['id_card'])) {
+    $action = $_GET['action'];
+    $id_card = $_GET['id_card'];
+
+    // Kết nối cơ sở dữ liệu và cập nhật trạng thái
+    $status = ($action === 'approve') ? '1' : '2';
+
+    $query = "UPDATE tbl_card SET status = ? WHERE id_card = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $status, $id_card);
+
+    if ($stmt->execute()) {
+        $message = ($action === 'approve') ? "Chấp nhận thẻ thành công." : "Từ chối thẻ thành công.";
+        $_SESSION['card_success'] = $message;
+    } else {
+        $_SESSION['card_error'] = "Đã xảy ra lỗi khi cập nhật trạng thái thẻ.";
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    // Chuyển hướng về trang danh sách thẻ
+    header('Location: /manager-card-user');
+    exit();
+}
+?>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -35,9 +63,8 @@
                     <tbody>
                         <?php
                         // Kết nối cơ sở dữ liệu và lấy danh sách thẻ
-                        $query = "SELECT * FROM tbl_card WHERE user_id = ?";
+                        $query = "SELECT * FROM tbl_card";
                         $stmt = $conn->prepare($query);
-                        $stmt->bind_param('i', $user_id);
                         $stmt->execute();
                         $result = $stmt->get_result();
 
@@ -75,8 +102,12 @@
                                         <td>{$statusText}</td>
                                         <td>{$formattedAmount} VND</td>";
 
-                                if ($row['status'] == '1') { // Check if status is 'active'
-                                    echo "<td><a href='/withdraw-visa?id_card={$row['id_card']}' class='btn-withdraw'>Rút tiền</a></td>";
+                                // Hiển thị nút chấp nhận và từ chối chỉ khi trạng thái là '0'
+                                if ($row['status'] == '0') {
+                                    echo "<td>
+                                            <button><a href='?action=approve&id_card={$row['id_card']}' class='btn-accept'>Chấp Nhận</a></button>
+                                            <button class='btn-decline'><a href='?action=decline&id_card={$row['id_card']}' >Từ Chối</a></button>
+                                          </td>";
                                 } else {
                                     echo "<td></td>";
                                 }
@@ -94,6 +125,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
@@ -102,11 +134,12 @@
         toastr.success("<?php echo $_SESSION['card_success']; ?>");
         <?php unset($_SESSION['card_success']); ?>
         <?php endif; ?>
-    });
-     <?php if (isset($_SESSION['otp_success'])) : ?>
-        toastr.success("<?php echo $_SESSION['otp_success']; ?>");
-        <?php unset($_SESSION['otp_success']); ?>
+
+        <?php if (isset($_SESSION['card_error'])) : ?>
+        toastr.error("<?php echo $_SESSION['card_error']; ?>");
+        <?php unset($_SESSION['card_error']); ?>
         <?php endif; ?>
+    });
     </script>
 </body>
 

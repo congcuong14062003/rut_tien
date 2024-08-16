@@ -8,21 +8,49 @@
 
 .container_boby {
     display: flex;
-    flex-direction: column; /* Để cho các phần tử sắp xếp theo cột trên màn hình nhỏ */
+    flex-direction: column;
+    /* Để cho các phần tử sắp xếp theo cột trên màn hình nhỏ */
+    height: calc(100vh - 60px);
 }
 
+.container_form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+}
+a {
+    text-decoration: none;
+}
 .content_right {
     flex: 1;
 }
+
+.container {
+    overflow: auto;
+    max-height: 90%;
+}
+
 .side_bar_mobile {
     display: flex;
     align-items: center;
     color: #fff;
 }
-.icon-mobile i{
+
+.icon-mobile i {
     font-size: 20px;
     display: none;
 }
+
 input[type="submit"] {
     background-color: #007bff;
     border: none;
@@ -39,32 +67,41 @@ input[type="submit"] {
         margin: 100px auto 0 auto !important;
         width: 95% !important;
     }
+
     button {
         margin: 5px 0 !important;
     }
+
     .container_boby {
-        flex-direction: column; /* Để các phần tử trong container sắp xếp theo cột */
+        flex-direction: column;
+        /* Để các phần tử trong container sắp xếp theo cột */
     }
-    .icon-mobile i{
+
+    .icon-mobile i {
         font-size: 20px;
         display: block;
         margin-right: 20px;
     }
 
     input[type="submit"] {
-        font-size: 14px; /* Giảm kích thước font cho nút submit trên thiết bị di động */
-        padding: 8px; /* Giảm padding cho nút submit trên thiết bị di động */
+        font-size: 14px;
+        /* Giảm kích thước font cho nút submit trên thiết bị di động */
+        padding: 8px;
+        /* Giảm padding cho nút submit trên thiết bị di động */
     }
 }
 
 /* Media Query cho thiết bị máy tính để bàn (PC) */
 @media (min-width: 1024px) {
     .container_boby {
-        flex-direction: row; /* Để các phần tử trong container sắp xếp theo hàng trên máy tính để bàn */
+        flex-direction: row;
+        /* Để các phần tử trong container sắp xếp theo hàng trên máy tính để bàn */
     }
 
     input[type="submit"] {
-        font-size: 16px; /* Đặt lại kích thước font cho nút submit trên máy tính để bàn */
-        padding: 10px; /* Đặt lại padding cho nút submit trên máy tính để bàn */
+        font-size: 16px;
+        /* Đặt lại kích thước font cho nút submit trên máy tính để bàn */
+        padding: 10px;
+        /* Đặt lại padding cho nút submit trên máy tính để bàn */
     }
 }

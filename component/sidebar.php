@@ -45,8 +45,8 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                             Trang cá nhân
                         </a>
                     <?php } else { ?>
-                        <a class="nav-link" href="javascript:void(0);">
-                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                        <a class="nav-link <?php echo ($current_page == 'manager-user') ? 'active' : ''; ?>" href="/manager-user">
+                            <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                             Quản lý user
                         </a>
                         <a class="nav-link" href="javascript:void(0);">
@@ -57,15 +57,15 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                             <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
                             Duyệt lệnh rút tiền từ tài khoản
                         </a>
-                        <a class="nav-link" href="javascript:void(0);">
+                        <a class="nav-link <?php echo ($current_page == 'manager-card-user') ? 'active' : ''; ?>" href="/manager-card-user">
                             <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
                             Duyệt add thẻ vào tài khoản
                         </a>
                     <?php } ?>
 
 
-                    <form class="logout" method="post" action="../logout.php">
-                        <input type="submit" value="Đăng Xuất">
+                    <form class="" method="post" action="../logout.php">
+                        <input type="submit" class="logout" value="Đăng Xuất">
                     </form>
                 </div>
             </div>

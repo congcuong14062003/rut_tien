@@ -1,6 +1,8 @@
-<?php include '../component/header.php'; ?>
-<?php include '../component/formatCardNumber.php'; ?>
-<?php include '../component/formatAmount.php'; ?>
+<?php
+include '../component/header.php';
+include '../component/formatCardNumber.php';
+include '../component/formatAmount.php';
+?>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -20,7 +22,7 @@
     <div class="container_boby">
         <?php include '../component/sidebar.php'; ?>
         <div class="content_right">
-            <div class="container">
+            <div class="container border_bottom">
                 <h1 class="title">Lịch sử giao dịch</h1>
                 <table>
                     <thead>
@@ -45,13 +47,21 @@
                         $stmt->execute();
                         $result = $stmt->get_result();
 
-
-
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Thêm thẻ") ? formatCardNumber($row['card_number']) : '';
                                 $amount = formatAmount($row['amount']);
                                 $amountWithUnit = !empty($row['amount']) ? $amount . " VND" : $amount; // Thêm "VND" chỉ khi số tiền không rỗng
+                                
+                                // Kiểm tra trạng thái và hiển thị giá trị tương ứng
+                                $statusText = '';
+                                if ($row['status'] == 0) {
+                                    $statusText = 'init';
+                                } elseif ($row['status'] == 1) {
+                                    $statusText = 'active';
+                                } elseif ($row['status'] == 2) {
+                                    $statusText = 'inactive';
+                                }
 
                                 echo "<tr>
                                         <td><a href='/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
@@ -60,7 +70,7 @@
                                         <td>{$amountWithUnit}</td>
                                         <td>{$row['transaction_date']}</td>
                                         <td>{$row['updated_at']}</td>
-                                        <td>{$row['status']}</td>
+                                        <td>{$statusText}</td>
                                     </tr>";
                             }
                         } else {

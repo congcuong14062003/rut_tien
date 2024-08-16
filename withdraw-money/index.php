@@ -99,7 +99,7 @@ $conn->close();
 <body>
     <div class="container_boby">
         <?php include '../component/sidebar.php'; ?>
-        <div class="content_right">
+        <div class="content_right container_form">
             <div class="container">
                 <h1 class="title">Rút tiền về tài khoản</h1>
                 <?php if (empty($user['wallet_address'])): ?>

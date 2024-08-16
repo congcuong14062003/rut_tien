@@ -6,6 +6,7 @@ CREATE TABLE users (
     wallet_address VARCHAR(255),
     second_password VARCHAR(255),
     balance int default 0,
+    email varchar(45),
     role ENUM('user', 'admin') DEFAULT 'user' NOT NULL
 );
 
@@ -27,7 +28,7 @@ CREATE TABLE tbl_history (
     type VARCHAR(255),
     id_card INT,
     otp varchar(30),
-    status varchar(30) DEFAULT 'init',
+    status ENUM('0', '1', '2') DEFAULT '0' NOT NULL,
     amount INT,
     address_wallet VARCHAR(255),
     transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
