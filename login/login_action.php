@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = $user['role'];
                 $_SESSION['success_login'] = "Đăng nhập thành công";
-                header("Location: /home");
+                header("Location: /index.php");
                 exit();
             } else {
                 $_SESSION['error_login'] = "Sai mật khẩu!";

@@ -5,8 +5,15 @@ error_reporting(E_ALL);
 
 session_start();
 if (isset($_SESSION['user_id'])) {
-    header("Location: /home");
-    exit();
+    if(isset($_SESSION['role'])) {
+        if ($_SESSION['role'] == 'admin') {
+            header("Location: /admin/home");
+            exit();
+        } else {
+            header("Location: /user/home");
+            exit();
+        }
+    }
 } else {
     header("Location: /login");
     exit();

@@ -60,7 +60,7 @@
         <i class="fas fa-exclamation-triangle"></i>
         <h1>Không Có Quyền</h1>
         <p>Rất tiếc, bạn không có quyền truy cập vào trang này.</p>
-        <a href="/home">Về Trang Chính</a>
+        <a href="/index.php">Về Trang Chính</a>
     </div>
 </body>
 

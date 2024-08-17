@@ -26,9 +26,6 @@ if (isset($_SESSION['user_id'])) {
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
             <?php
-            if (isset($_SESSION['success_register'])) {
-                echo $_SESSION['success_register'];
-            }
             ?>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
