@@ -6,10 +6,7 @@ error_reporting(E_ALL);
 session_start();
 if (isset($_SESSION['user_id'])) {
     if(isset($_SESSION['role'])) {
-        if ($_SESSION['role'] == 'admin') {
-            header("Location: /admin/home");
-            exit();
-        } else {
+        if ($_SESSION['role'] == 'user') {
             header("Location: /user/home");
             exit();
         }

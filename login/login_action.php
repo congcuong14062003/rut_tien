@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     // Truy vấn cơ sở dữ liệu để lấy thông tin người dùng
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? and role = 'user'");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();

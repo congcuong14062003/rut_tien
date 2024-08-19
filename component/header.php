@@ -51,7 +51,7 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
             <i class="fa-solid fa-bars"></i>
         </div>
         <div class="user_infor">
-            <?php if ($role != 'admin') { ?>
+            <?php if ($role == 'user') { ?>
                 <a href="/profile">
                     <?php
                     if (isset($_SESSION['user_id'])) {
@@ -59,12 +59,10 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
                     }
                     ?>
                 </a>
-            <?php } else { ?>
-                <span>Xin chào, <?php echo htmlspecialchars($user['username']); ?></span>
             <?php } ?>
         </div>
     </div>
-    <?php if ($role != 'admin') { ?>
+    <?php if ($role == 'user') { ?>
         <div class="balance">
             <?php
             if (isset($_SESSION['user_id'])) {
@@ -82,11 +80,7 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link <?php echo ($current_page == 'home') ? 'active' : ''; ?>" href="../home">
-                            <div class="sb-nav-link-icon"><i class="fa-solid fa-house"></i></div>
-                            Trang chủ
-                        </a>
-                        <?php if ($role != 'admin') { ?>
+                        <?php if ($role == 'user') { ?>
                             <a class="nav-link <?php echo ($current_page == 'home') ? 'active' : ''; ?>" href="/user/home">
                                 <div class="sb-nav-link-icon"><i class="fa-solid fa-house"></i></div>
                                 Trang chủ
@@ -127,50 +121,6 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
                                 <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
                                 Trang cá nhân
                             </a>
-                        <?php } else {
-                            $user_permissions = [];
-                            $query = "SELECT permission FROM tbl_permissions WHERE user_id = ?";
-                            $stmt = $conn->prepare($query);
-                            $stmt->bind_param("i", $_SESSION['user_id']);
-                            $stmt->execute();
-                            $result = $stmt->get_result();
-                            while ($row = $result->fetch_assoc()) {
-                                $user_permissions[] = $row['permission'];
-                            }
-                            $stmt->close();
-                            ?>
-                            <a class="nav-link <?php echo ($current_page == 'home') ? 'active' : ''; ?>" href="/admin/home">
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-house"></i></div>
-                                Trang chủ
-                            </a>
-                            <?php if (in_array('manage_users', $user_permissions)) { ?>
-                                <a class="nav-link <?php echo ($current_page == 'manager-user') ? 'active' : ''; ?>"
-                                    href="/admin/manager-user">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-user"></i></div>
-                                    Quản lý user
-                                </a>
-                            <?php } ?>
-                            <?php if (in_array('approve_card_withdraw', $user_permissions)) { ?>
-                                <a class="nav-link <?php echo ($current_page == 'manager-card-withdraw') ? 'active' : ''; ?>"
-                                    href="/admin/manager-card-withdraw">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
-                                    Duyệt lệnh rút tiền từ thẻ về tài khoản
-                                </a>
-                            <?php } ?>
-                            <?php if (in_array('approve_account_withdraw', $user_permissions)) { ?>
-                                <a class="nav-link <?php echo ($current_page == 'manager-account-withdraw') ? 'active' : ''; ?>"
-                                    href="/admin/manager-account-withdraw">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
-                                    Duyệt lệnh rút tiền từ tài khoản về ví
-                                </a>
-                            <?php } ?>
-                            <?php if (in_array('approve_add_card', $user_permissions)) { ?>
-                                <a class="nav-link <?php echo ($current_page == 'manager-card-user') ? 'active' : ''; ?>"
-                                    href="/admin/manager-card-user">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-check-circle"></i></div>
-                                    Duyệt add thẻ vào tài khoản
-                                </a>
-                            <?php } ?>
                         <?php } ?>
 
                         <form class="logout" method="post" action="/logout.php">
