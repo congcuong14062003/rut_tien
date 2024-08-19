@@ -15,8 +15,6 @@ if (isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="login.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Đăng Nhập</title>
-    <script src='https://www.google.com/recaptcha/api.js' async defer></script>
-
 </head>
 
 <body>
@@ -25,12 +23,9 @@ if (isset($_SESSION['user_id'])) {
         <form method="post" action="login_action.php">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
-            <?php
-            ?>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <p>Chưa có tài khoản <a style="color: red" href="/register">Đăng ký</a></p>
-            <div class="g-recaptcha" data-sitekey="6LcyFyAqAAAAANh0qK4OqyUOvtykK-GC-lSbLIES"></div>
             <input type="submit" value="Đăng Nhập">
         </form>
     </div>

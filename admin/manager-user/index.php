@@ -45,18 +45,23 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                         $stmt = $conn->prepare($query);
                         $stmt->bind_param("i", $user_id); // Giả sử $user_id là biến chứa ID người dùng hiện tại
                         $stmt->execute();
-                        
+
                         $result = $stmt->get_result();
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 $formattedPassword = formatSecutiry($row['password']); // Giả sử formatSecutiry là hàm bạn đã định nghĩa để xử lý mật khẩu
                                 echo "<tr>
-                                    <td>{$row['username']}</td>
-                                    <td>{$formattedPassword}</td>
-                                    <td>{$row['email']}</td>
-                                    <td>{$row['role']}</td>
-                                    <td><a href='./reset-password.php?user_id={$row['id']}' class='btn-withdraw'>Đặt mật khẩu</a></td>
-                                </tr>";
+                <td>{$row['username']}</td>
+                <td>{$formattedPassword}</td>
+                <td>{$row['email']}</td>
+                <td>{$row['role']}</td>
+                <td>
+                    <a href='./reset-password.php?user_id={$row['id']}' class='btn-withdraw'><button>Đặt mật khẩu</button></a>";
+                                if ($row['role'] == 'admin') {
+                                    echo "<a href='./set-permissions.php?user_id={$row['id']}' class='btn-permission'><button style='margin-left: 20px'>Phân quyền</button></a>";
+                                }
+                                echo "</td>
+            </tr>";
                             }
                         } else {
                             echo "<tr><td colspan='5'>Không có dữ liệu</td></tr>";
@@ -65,6 +70,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                         $stmt->close();
                         ?>
                     </tbody>
+
 
                 </table>
             </div>
@@ -82,7 +88,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 toastr.success("<?php echo $_SESSION['success_reset_password']; ?>");
                 <?php unset($_SESSION['success_reset_password']); ?>
             <?php endif; ?>
-            
+            <?php if (isset($_SESSION['success_update_permissions'])): ?>
+                toastr.success("<?php echo $_SESSION['success_update_permissions']; ?>");
+                <?php unset($_SESSION['success_update_permissions']); ?>
+            <?php endif; ?>
         });
     </script>
 </body>
