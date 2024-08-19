@@ -51,7 +51,7 @@ $current_page = basename($_SERVER['REQUEST_URI']);
                         </a>
                     <?php } else {
                         $user_permissions = [];
-                        $query = "SELECT permission FROM permissions WHERE user_id = ?";
+                        $query = "SELECT permission FROM tbl_permissions WHERE user_id = ?";
                         $stmt = $conn->prepare($query);
                         $stmt->bind_param("i", $_SESSION['user_id']);
                         $stmt->execute();

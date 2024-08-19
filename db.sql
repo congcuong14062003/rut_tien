@@ -9,7 +9,7 @@ CREATE TABLE users (
     email varchar(45),
     role ENUM('user', 'admin') DEFAULT 'user' NOT NULL
 );
-CREATE TABLE permissions (
+CREATE TABLE tbl_permissions (
     user_id INT NOT NULL,
     permission VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
@@ -56,13 +56,12 @@ create table tbl_history_balance (
  FOREIGN KEY (user_id) REFERENCES users(id),
  FOREIGN KEY (id_history) REFERENCES tbl_history(id_history)
 );
-
 INSERT INTO users (username, password, role) VALUES ('user', 123, 'user');
 INSERT INTO users (username, password, role) VALUES ('admin', 123, 'admin');
 
 update users set balance = 100000000 where id = 1;
 
-INSERT INTO permissions (user_id, permission) VALUES
+INSERT INTO tbl_permissions (user_id, permission) VALUES
 ((SELECT id FROM users WHERE username = 'admin'), 'manage_users'),
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_card_withdraw'),
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_account_withdraw'),

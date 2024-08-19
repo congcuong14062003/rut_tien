@@ -10,14 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $permissions = isset($_POST['permissions']) ? $_POST['permissions'] : [];
 
     // Xóa tất cả các quyền hiện tại của người dùng
-    $stmt = $conn->prepare("DELETE FROM permissions WHERE user_id = ?");
+    $stmt = $conn->prepare("DELETE FROM tbl_permissions WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $stmt->close();
 
     // Thêm các quyền mới
     foreach ($permissions as $permission) {
-        $stmt = $conn->prepare("INSERT INTO permissions (user_id, permission) VALUES (?, ?)");
+        $stmt = $conn->prepare("INSERT INTO tbl_permissions (user_id, permission) VALUES (?, ?)");
         $stmt->bind_param("is", $user_id, $permission);
         $stmt->execute();
         $stmt->close();
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $user_id = $_GET['user_id'];
-$query = "SELECT permission FROM permissions WHERE user_id = ?";
+$query = "SELECT permission FROM tbl_permissions WHERE user_id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
