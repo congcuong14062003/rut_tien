@@ -107,6 +107,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                 toastr.success("<?php echo $_SESSION['with_draw_visa_success']; ?>");
                 <?php unset($_SESSION['with_draw_visa_success']); ?>
             <?php endif; ?>
+            <?php if (isset($_SESSION['otp_success'])): ?>
+                toastr.success("<?php echo $_SESSION['otp_success']; ?>");
+                <?php unset($_SESSION['otp_success']); ?>
+            <?php endif; ?>
         });
     </script>
 </body>

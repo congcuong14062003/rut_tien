@@ -32,17 +32,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                         <thead>
                             <tr>
                                 <th>Số Tiền Giao Dịch</th>
+                                <th>Số Dư Trước Giao Dịch</th>
+                                <th>Số Dư Sau Giao Dịch</th>
                                 <th>Thời Gian Giao Dịch</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
                             $user_id = $user['id'];
-                            $history_balance_query = "SELECT hb.balance_fluctuation, h.type, hb.transaction_date 
-                                                  FROM tbl_history_balance hb 
-                                                  JOIN tbl_history h ON hb.id_history = h.id_history 
-                                                  WHERE hb.user_id = ? 
-                                                  ORDER BY hb.transaction_date DESC";
+                            $history_balance_query = "SELECT hb.balance_fluctuation, hb.balance_before, hb.balance_after, h.type, hb.transaction_date 
+                                                      FROM tbl_history_balance hb 
+                                                      JOIN tbl_history h ON hb.id_history = h.id_history 
+                                                      WHERE hb.user_id = ? 
+                                                      ORDER BY hb.transaction_date DESC";
                             $stmt = $conn->prepare($history_balance_query);
                             $stmt->bind_param('i', $user_id);
                             $stmt->execute();
@@ -50,10 +52,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                             if ($result->num_rows > 0) {
                                 while ($row = $result->fetch_assoc()) {
                                     $balance_fluctuation = $row['balance_fluctuation'];
+                                    $balance_before = $row['balance_before'];
+                                    $balance_after = $row['balance_after'];
                                     $type = $row['type'];
                                     $transaction_date = $row['transaction_date'];
 
-                                    // Kiểm tra loại giao dịch
+                                    // Format số tiền giao dịch
                                     if ($type == "Rút tiền về ví") {
                                         $formatted_balance_fluctuation = "- " . formatAmount($balance_fluctuation);
                                     } elseif ($type == "Rút tiền từ thẻ") {
@@ -62,22 +66,27 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                                         $formatted_balance_fluctuation = number_format($balance_fluctuation);
                                     }
 
+                                    // Format số dư trước và sau giao dịch
+                                    $formatted_balance_before = formatAmount($balance_before);
+                                    $formatted_balance_after = formatAmount($balance_after);
+
                                     echo "<tr>";
                                     echo "<td>{$formatted_balance_fluctuation}</td>";
+                                    echo "<td>{$formatted_balance_before}</td>";
+                                    echo "<td>{$formatted_balance_after}</td>";
                                     echo "<td>{$transaction_date}</td>";
                                     echo "</tr>";
                                 }
                             } else {
                                 echo "<tr>
-                            <td colspan='2'>Chưa có dữ liệu</td>
-                        </tr>";
+                                    <td colspan='4'>Chưa có dữ liệu</td>
+                                </tr>";
                             }
                             $stmt->close();
                             ?>
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>

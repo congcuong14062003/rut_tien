@@ -60,3 +60,30 @@ input[type="submit"] {
 input[type="submit"]:hover {
     background-color: #45a049;
 }
+@media (max-width: 1023px) {
+    .container_login {
+        width: 80%;
+        max-width: 90%;
+    }
+    .container {
+        padding: 50px;
+    }
+    label {
+        font-size: 20px;
+    }
+
+    h1 {
+        font-size: 30px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        padding: 30px;
+        font-size: 25px;
+    }
+
+    input[type="submit"] {
+        padding: 30px;
+        font-size: 25px;
+    }
+}

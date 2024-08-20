@@ -26,6 +26,7 @@ CREATE TABLE tbl_card (
     total_amount_success INT DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
 CREATE TABLE tbl_history (
     id_history INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -34,6 +35,7 @@ CREATE TABLE tbl_history (
     otp varchar(30),
     status ENUM('0', '1', '2') DEFAULT '0' NOT NULL,
     amount INT,
+    reason TEXT,
     address_wallet VARCHAR(255),
     transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -51,6 +53,8 @@ create table tbl_history_balance (
  id int auto_increment primary key,
  balance_fluctuation int not null,
  user_id int not null,
+ balance_before DECIMAL(15, 2) NOT NULL DEFAULT 0,
+ balance_after DECIMAL(15, 2) NOT NULL DEFAULT 0,
  transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
  id_history int not null,
  FOREIGN KEY (user_id) REFERENCES users(id),
@@ -66,3 +70,11 @@ INSERT INTO tbl_permissions (user_id, permission) VALUES
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_card_withdraw'),
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_account_withdraw'),
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_add_card');
+
+-- ALTER TABLE tbl_history
+-- ADD COLUMN reason text
+
+
+-- ALTER TABLE tbl_history_balance
+-- ADD COLUMN balance_before DECIMAL(15, 2) NOT NULL DEFAULT 0,
+-- ADD COLUMN balance_after DECIMAL(15, 2) NOT NULL DEFAULT 0;

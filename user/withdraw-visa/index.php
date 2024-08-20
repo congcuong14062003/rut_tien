@@ -1,13 +1,12 @@
-<?php include '../../component/header.php'; ?>
 <?php
+include '../../component/header.php';
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
     header("Location: /no-permission");
     exit();
 }
-?>
-<?php
-// Kết nối cơ sở dữ liệu
+
 
 // Lấy thông tin từ URL
 $id_card = isset($_GET['id_card']) ? $_GET['id_card'] : '';
@@ -19,7 +18,7 @@ $selected_card_id = $id_card; // ID thẻ sẽ được chọn tự động nế
 // Lấy tất cả các thẻ của người dùng
 $cards_query = "SELECT * FROM tbl_card WHERE user_id = ? AND status = '1'";
 $stmt = $conn->prepare($cards_query);
-$stmt->bind_param('i', $user_id);
+$stmt->bind_param('i', $_SESSION['user_id']);
 $stmt->execute();
 $cards_result = $stmt->get_result();
 while ($card = $cards_result->fetch_assoc()) {
@@ -47,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card) VALUES (?, ?, ?, NOW(), NOW(), ?)";
     $stmt = $conn->prepare($history_query);
     $type = 'Rút tiền từ thẻ';
-    $stmt->bind_param('isii', $user_id, $type, $amount, $card_id);
+    $stmt->bind_param('isii', $_SESSION['user_id'], $type, $amount, $card_id);
     if ($stmt->execute()) {
         // Cập nhật tổng số tiền đã rút trong bảng tbl_card
         $update_query = "UPDATE tbl_card SET total_amount_success = total_amount_success + ? WHERE id_card = ?";
@@ -55,12 +54,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
         $update_stmt->bind_param('ii', $amount, $card_id);
         $update_stmt->execute();
         $update_stmt->close();
-        $_SESSION['with_draw_visa_success'] = "Yêu cầu rút tiền từ thẻ về tài khoản thành công!";
-        header('Location: /user/history');
+
+        // Lưu ID giao dịch vào session để sử dụng khi xác nhận OTP
+        $_SESSION['new_withdraw_id'] = $stmt->insert_id;
+
+        // Hiển thị form OTP
+        $show_otp_form = true;
     } else {
         $_SESSION['with_draw_error'] = "Rút tiền thất bại!";
     }
     $stmt->close();
+}
+
+// Xử lý xác nhận OTP
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
+    $otp = $_POST['otp'];
+    $withdraw_id = $_SESSION['new_withdraw_id'];
+
+    $sql = "UPDATE tbl_history SET otp = ? WHERE id_history = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $otp, $withdraw_id);
+
+    if ($stmt->execute()) {
+        $_SESSION['otp_success'] = 'Xác nhận OTP thành công. Rút tiền đã được thực hiện.';
+        header("Location: /user/history");
+        exit();
+    } else {
+        $_SESSION['otp_error'] = 'Xác nhận OTP thất bại.';
+    }
+
+    $stmt->close();
+    $conn->close();
 }
 
 // Đóng kết nối
@@ -98,6 +122,8 @@ $conn->close();
         <div class="content_right container_form">
             <div class="container">
                 <h1 class="title">Rút tiền từ thẻ</h1>
+
+                <!-- Form rút tiền -->
                 <form id="withdraw-form" method="post" action="">
                     <label for="card_id">Số thẻ:</label>
                     <select id="card_id" name="card_id" required>
@@ -123,10 +149,23 @@ $conn->close();
                         <?php echo $id_card ? 'value="' . htmlspecialchars($card['cvv']) . '"' : ''; ?>>
                     <label for="amount">Số tiền muốn rút:</label>
                     <input type="number" id="amount" name="amount" required>
-                    <!-- <label for="otp">Nhập mã OTP:</label>
-                    <input type="password" id="otp" name="otp" required> -->
                     <input type="submit" name="withdraw" value="Rút tiền">
                 </form>
+
+                <!-- Form nhập OTP -->
+                <?php if (isset($show_otp_form) && $show_otp_form): ?>
+                <form id="otp-form" method="post" action="" style="display:block;">
+                    <label for="otp">Nhập mã OTP:</label>
+                    <input type="password" id="otp" name="otp" required>
+                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
+                </form>
+                <?php else: ?>
+                <form id="otp-form" method="post" action="" style="display:none;">
+                    <label for="otp">Nhập mã OTP:</label>
+                    <input type="password" id="otp" name="otp" required>
+                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
+                </form>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -149,6 +188,12 @@ $conn->close();
         <?php if (isset($_SESSION['with_draw_error'])) : ?>
         toastr.error("<?php echo $_SESSION['with_draw_error']; ?>");
         <?php unset($_SESSION['with_draw_error']); ?>
+        <?php endif; ?>
+
+        // Hiển thị form OTP nếu có
+        <?php if (isset($show_otp_form) && $show_otp_form) : ?>
+        $('#withdraw-form').hide();
+        $('#otp-form').show();
         <?php endif; ?>
     });
     </script>
