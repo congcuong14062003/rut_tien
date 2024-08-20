@@ -63,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label for="wallet_address">Địa chỉ ví mới:</label>
                             <input type="text" class="form-control" id="wallet_address" name="wallet_address" required>
                         </div>
+                        <p style="margin: 10px; color: red">Chú ý: chỉ hỗ trợ ví USDT TRC20</p>
                         <div class="form-group">
                             <label for="secondary_password">Mật khẩu cấp hai:</label>
                             <input type="password" class="form-control" id="secondary_password" name="secondary_password"

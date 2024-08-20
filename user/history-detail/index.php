@@ -75,18 +75,18 @@ function getStatusText($status) {
                     <?php if ($row['type'] === "Thêm thẻ" || $row['type'] === "Rút tiền từ thẻ"): ?>
                         <label for="type">Số thẻ:</label>
                         <input disabled type="text" id="type" name=""
-                            value="<?php echo htmlspecialchars($formattedCardNumber); ?>">
+                            value="<?php echo htmlspecialchars($row['card_number']); ?>">
                     <?php endif; ?>
 
                     <?php if ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Rút tiền về ví"): ?>
                         <label for="type">Số tiền giao dịch:</label>
                         <input disabled type="text" id="type" name=""
-                            value="<?php echo htmlspecialchars(formatAmount($row['amount']) . ($row['amount'] ? " VND" : "")); ?>">
+                            value="<?php echo htmlspecialchars(formatAmount($row['amount'])); ?>">
                     <?php endif; ?>
                     <?php if ($row['type'] === "Rút tiền về ví"): ?>
                         <label for="type">Ví nhận tiền:</label>
                         <input disabled type="text" id="type" name=""
-                            value="<?php echo htmlspecialchars($formatted_wallet_address); ?>">
+                            value="<?php echo htmlspecialchars($wallet_address); ?>">
                     <?php endif; ?>
                     <label for="type">Thời gian giao dịch:</label>
                     <input disabled type="text" id="type" name=""

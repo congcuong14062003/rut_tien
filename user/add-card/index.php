@@ -1,15 +1,15 @@
 <?php
 include '../../component/header.php';
-?>
-<?php
+
+// Kiểm tra quyền truy cập
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
-    // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
     header("Location: /no-permission");
     exit();
 }
-?>
-<?php
 
+
+
+// Xử lý thêm thẻ mới
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
@@ -20,29 +20,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
 
     $expiry_date = $expiry_month . '/' . $expiry_year; // Kết hợp tháng và năm thành định dạng MM/YY
 
-    $sql = "INSERT INTO tbl_card (user_id, card_number, expDate, cvv, firstName, lastName) 
-            VALUES (?, ?, ?, ?, ?, ?)";
+    // Thêm thẻ vào bảng tbl_card
+    $sql = "INSERT INTO tbl_card (user_id, card_number, expDate, cvv, firstName, lastName) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("isssss", $user_id, $card_number, $expiry_date, $cvv, $first_name, $last_name);
 
     if ($stmt->execute()) {
         $_SESSION['card_success'] = 'Thêm thẻ mới thành công.';
         $_SESSION['new_card_id'] = $stmt->insert_id; // Lưu ID thẻ mới vào session để sử dụng sau
+        $stmt->close();
+
+        // Thêm bản ghi vào bảng tbl_history
+        $type = "Thêm thẻ";
+        $sql = "INSERT INTO tbl_history (id_card, user_id, type) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iis", $_SESSION['new_card_id'], $user_id, $type);
+
+        if ($stmt->execute()) {
+            $_SESSION['history_success'] = 'Giao dịch thêm thẻ đã được ghi nhận.';
+        } else {
+            $_SESSION['history_error'] = 'Ghi nhận giao dịch thêm thẻ thất bại.';
+        }
+        $stmt->close();
     } else {
         $_SESSION['card_error'] = 'Thêm thẻ mới thất bại';
+        $stmt->close();
     }
-
-    $stmt->close();
     $conn->close();
 }
 
+// Xử lý xác nhận OTP
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
     $otp = $_POST['otp'];
     $card_id = $_SESSION['new_card_id'];
-    $type = "Thêm thẻ";
-    $sql = "INSERT INTO tbl_history (id_card, otp, user_id, type) VALUES (?, ?, ?, ?)";
+    
+
+
+    $sql = "UPDATE tbl_history SET otp = ? WHERE id_card = ? AND user_id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isis", $card_id, $otp, $user_id, $type);
+    $stmt->bind_param("sis", $otp, $card_id, $user_id);
 
     if ($stmt->execute()) {
         $_SESSION['otp_success'] = 'Xác nhận OTP thành công. Thêm thẻ mới thành công.';
@@ -51,7 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
         $_SESSION['otp_error'] = 'Xác nhận OTP thất bại.';
         header("Location: /user/add-card");
     }
-
     $stmt->close();
     $conn->close();
 }
@@ -121,8 +136,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
                 toastr.error("<?php echo $_SESSION['card_error']; ?>");
                 <?php unset($_SESSION['card_error']); ?>
             <?php endif; ?>
-
-
 
             <?php if (isset($_SESSION['otp_error'])): ?>
                 toastr.error("<?php echo $_SESSION['otp_error']; ?>");
@@ -194,7 +207,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
             $('#add-card-form').on('submit', function (e) {
                 if (!validateForm()) {
                     e.preventDefault();
-                    return
+                    return;
                 }
             });
 

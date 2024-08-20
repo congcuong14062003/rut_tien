@@ -66,7 +66,7 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
         <div class="balance">
             <?php
             if (isset($_SESSION['user_id'])) {
-                echo 'Số dư: ' . htmlspecialchars($formattedBalance . ' VND');
+                echo 'Số dư: ' . htmlspecialchars($formattedBalance . ' $');
             }
             ?>
         </div>

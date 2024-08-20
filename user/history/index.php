@@ -61,7 +61,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                             while ($row = $result->fetch_assoc()) {
                                 $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Thêm thẻ") ? formatCardNumber($row['card_number']) : '';
                                 $amount = formatAmount($row['amount']);
-                                $amountWithUnit = !empty($row['amount']) ? $amount : ''; // Thêm "VND" chỉ khi số tiền không rỗng
+                                $amountWithUnit = !empty($row['amount']) ? $amount : ''; // Thêm "$" chỉ khi số tiền không rỗng
                         
                                 // Kiểm tra trạng thái và hiển thị giá trị tương ứng
                                 $statusText = '';
@@ -76,7 +76,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                                 echo "<tr>
                                         <td><a href='/user/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
                                         <td>{$row['type']}</td>
-                                        <td>{$formattedCardNumber}</td>
+                                        <td>{$row['card_number']}</td>
                                         <td>{$amountWithUnit}</td>
                                         <td>{$row['transaction_date']}</td>
                                         <td>{$row['updated_at']}</td>

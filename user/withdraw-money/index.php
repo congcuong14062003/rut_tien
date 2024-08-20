@@ -22,7 +22,7 @@ $formatted_wallet_address = formatWalletAddress($wallet_address);
 
 // Xử lý form rút tiền
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
-    $amount = $_POST['amount'];
+    $amount = $_POST['hidden_amount']; // Lấy số tiền từ hidden input
     $_SESSION['withdraw_amount'] = $amount; // Lưu số tiền vào session để sử dụng sau
     $_SESSION['withdraw_requested'] = true; // Đánh dấu rằng người dùng đã yêu cầu rút tiền
     header("Location: /user/withdraw-money");
@@ -52,12 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_withdraw'])) 
 
             // Lấy id_history vừa được chèn vào
             $id_history = $stmt->insert_id;
-
-            // Chèn vào bảng tbl_history_balance
-            // $history_balance_query = "INSERT INTO tbl_history_balance (balance_fluctuation, user_id, id_history, transaction_date) VALUES (?, ?, ?, NOW())";
-            // $stmt = $conn->prepare($history_balance_query);
-            // $stmt->bind_param('iii', $amount, $user_id, $id_history);
-            // $stmt->execute();
 
             $_SESSION['with_draw_success'] = "Thực hiện yêu cầu rút tiền từ tài khoản thành công!";
             unset($_SESSION['withdraw_requested']); // Xóa dấu hiệu yêu cầu rút tiền
@@ -119,9 +113,10 @@ $conn->close();
                         value="<?php echo htmlspecialchars(formatAmount($user['balance'])); ?>">
                     <label for="wallet_address">Địa chỉ ví nhận:</label>
                     <input type="text" id="wallet_address" name="wallet_address"
-                        value="<?php echo htmlspecialchars($formatted_wallet_address); ?>" disabled>
+                        value="<?php echo htmlspecialchars($wallet_address); ?>" disabled>
                     <label for="amount">Số tiền muốn rút:</label>
-                    <input type="number" id="amount" name="amount" required>
+                    <input type="text" id="amount" name="amount" required>
+                    <input type="hidden" id="hidden_amount" name="hidden_amount">
                     <input type="submit" name="withdraw" value="Rút tiền">
                 </form>
                 <?php else: ?>
@@ -139,6 +134,38 @@ $conn->close();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
     $(document).ready(function() {
+        // Định dạng số tiền theo dạng xxx.xxx.xxx
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // Kiểm tra số tiền nhập vào và hiển thị thông báo lỗi nếu cần
+        function validateAmount(amount) {
+            var numericValue = parseInt(amount.replace(/\./g, ''), 10);
+            if (numericValue > 10000) {
+                toastr.error("Vui lòng không nhập quá 10.000$");
+                return false;
+            }
+            return true;
+        }
+
+        $('#amount').on('input', function() {
+            var value = $(this).val().replace(/\./g, ''); // Loại bỏ dấu chấm hiện tại
+            if (!isNaN(value) && value.length > 0) {
+                var formattedValue = formatNumber(value);
+                $(this).val(formattedValue);
+                $('#hidden_amount').val(value); // Cập nhật giá trị số nguyên vào hidden input
+                validateAmount(value); // Kiểm tra số tiền
+            }
+        });
+
+        $('#withdraw-form').on('submit', function(event) {
+            var amount = $('#hidden_amount').val();
+            if (!validateAmount(amount)) {
+                event.preventDefault(); // Ngăn chặn việc gửi form
+            }
+        });
+
         <?php if (isset($_SESSION['with_draw_error'])) : ?>
         toastr.error("<?php echo $_SESSION['with_draw_error']; ?>");
         <?php unset($_SESSION['with_draw_error']); ?>

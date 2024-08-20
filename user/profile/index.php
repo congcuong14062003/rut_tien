@@ -34,7 +34,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
 
                     <label for="wallet_address">Địa chỉ ví:</label>
                 <input disabled type="text" id="wallet_address" name="wallet_address"
-                    value="<?php echo htmlspecialchars(formatSecutiry($user['wallet_address'])); ?>">
+                    value="<?php echo htmlspecialchars($user['wallet_address']); ?>">
 
                 <label for="username">Số dư hiện tại:</label>
                 <input disabled type="text" id="username" name="username"

@@ -71,7 +71,7 @@ include '../../component/formatAmount.php';
                                 $statusText = getStatusText($row['status']);
                                 echo "<tr>
                                         <td>{$row['firstName']} {$row['lastName']}</td>
-                                        <td>{$formattedCardNumber}</td>
+                                        <td>{$row['card_number']}</td>
                                         <td>{$row['expDate']}</td>
                                         <td>{$statusText}</td>
                                         <td>{$formattedAmount}</td>";

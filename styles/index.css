@@ -19,6 +19,7 @@
     align-items: center;
     justify-content: center;
 }
+
 button {
     background-color: #4CAF50;
     color: white;
@@ -28,17 +29,21 @@ button {
     outline: none;
     border-radius: 5px;
 }
+
 a {
     text-decoration: none;
 }
+
 .content_right {
     flex: 1;
 }
 
 .container {
+    min-width: 500px;
     overflow: auto;
     max-height: 90%;
 }
+
 .search_container {
     right: 20px;
     display: flex;
@@ -60,6 +65,7 @@ a {
     border-color: #007bff;
     outline: none;
 }
+
 .side_bar_mobile {
     display: flex;
     align-items: center;
@@ -83,9 +89,16 @@ input[type="submit"] {
 
 /* Media Query cho thiết bị di động */
 @media (max-width: 1023px) {
+    .container_boby {
+        display: block !important;
+        /* Để các phần tử trong container sắp xếp theo hàng trên máy tính để bàn */
+    }
+
     .container {
         margin: 100px auto 0 auto !important;
-        width: 95% !important;
+        width: 90% !important;
+        max-width: 95%;
+        min-width: 80%;
     }
 
     button {
