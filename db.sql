@@ -7,6 +7,7 @@ CREATE TABLE users (
     second_password VARCHAR(255),
     balance int default 0,
     email varchar(45),
+    create_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     role ENUM('user', 'admin') DEFAULT 'user' NOT NULL
 );
 CREATE TABLE tbl_permissions (

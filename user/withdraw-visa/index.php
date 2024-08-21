@@ -1,12 +1,12 @@
-<?php include '../../component/header.php'; ?>
 <?php
+include '../../component/header.php';
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     // Nếu không phải user, chuyển hướng đến trang thông báo không có quyền
     header("Location: /no-permission");
     exit();
 }
 
-// Kết nối cơ sở dữ liệu
 
 // Lấy thông tin từ URL
 $id_card = isset($_GET['id_card']) ? $_GET['id_card'] : '';
@@ -18,7 +18,7 @@ $selected_card_id = $id_card; // ID thẻ sẽ được chọn tự động nế
 // Lấy tất cả các thẻ của người dùng
 $cards_query = "SELECT * FROM tbl_card WHERE user_id = ? AND status = '1'";
 $stmt = $conn->prepare($cards_query);
-$stmt->bind_param('i', $user_id);
+$stmt->bind_param('i', $_SESSION['user_id']);
 $stmt->execute();
 $cards_result = $stmt->get_result();
 while ($card = $cards_result->fetch_assoc()) {
@@ -27,27 +27,27 @@ while ($card = $cards_result->fetch_assoc()) {
 $stmt->close();
 
 // Lấy thông tin thẻ từ cơ sở dữ liệu nếu có id_card
-$selected_card = null;
 if ($id_card) {
     $query = "SELECT * FROM tbl_card WHERE id_card = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('i', $id_card);
     $stmt->execute();
     $result = $stmt->get_result();
-    $selected_card = $result->fetch_assoc();
+    $card = $result->fetch_assoc();
     $stmt->close();
 }
 
 // Xử lý form rút tiền
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
-    $amount = $_POST['hidden_amount']; // Sử dụng giá trị từ input ẩn
+    $amount = $_POST['hidden_amount']; // Lấy số tiền từ hidden input
+    // $amount = $_POST['amount'];
     $card_id = $_POST['card_id'];
 
     // Thêm giao dịch vào bảng lịch sử với ngày hiện tại
     $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card) VALUES (?, ?, ?, NOW(), NOW(), ?)";
     $stmt = $conn->prepare($history_query);
     $type = 'Rút tiền từ thẻ';
-    $stmt->bind_param('isii', $user_id, $type, $amount, $card_id);
+    $stmt->bind_param('isii', $_SESSION['user_id'], $type, $amount, $card_id);
     if ($stmt->execute()) {
         // Cập nhật tổng số tiền đã rút trong bảng tbl_card
         $update_query = "UPDATE tbl_card SET total_amount_success = total_amount_success + ? WHERE id_card = ?";
@@ -55,12 +55,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
         $update_stmt->bind_param('ii', $amount, $card_id);
         $update_stmt->execute();
         $update_stmt->close();
-        $_SESSION['with_draw_visa_success'] = "Yêu cầu rút tiền từ thẻ về tài khoản thành công!";
-        header('Location: /user/history');
+
+        // Lưu ID giao dịch vào session để sử dụng khi xác nhận OTP
+        $_SESSION['new_withdraw_id'] = $stmt->insert_id;
+
+        // Hiển thị form OTP
+        $show_otp_form = true;
     } else {
         $_SESSION['with_draw_error'] = "Rút tiền thất bại!";
     }
     $stmt->close();
+}
+
+// Xử lý xác nhận OTP
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
+    $otp = $_POST['otp'];
+    $withdraw_id = $_SESSION['new_withdraw_id'];
+
+    $sql = "UPDATE tbl_history SET otp = ? WHERE id_history = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $otp, $withdraw_id);
+
+    if ($stmt->execute()) {
+        $_SESSION['otp_success'] = 'Xác nhận OTP thành công. Rút tiền đã được thực hiện.';
+        header("Location: /user/history");
+        exit();
+    } else {
+        $_SESSION['otp_error'] = 'Xác nhận OTP thất bại.';
+    }
+
+    $stmt->close();
+    $conn->close();
 }
 
 // Đóng kết nối
@@ -98,6 +123,8 @@ $conn->close();
         <div class="content_right container_form">
             <div class="container">
                 <h1 class="title">Rút tiền từ thẻ</h1>
+
+                <!-- Form rút tiền -->
                 <form id="withdraw-form" method="post" action="">
                     <label for="card_id">Số thẻ:</label>
                     <select id="card_id" name="card_id" required>
@@ -113,16 +140,34 @@ $conn->close();
                         <?php endforeach; ?>
                     </select>
                     <label for="name">Tên chủ thẻ:</label>
-                    <input type="text" id="name" name="name" disabled>
+                    <input type="text" id="name" name="name" disabled
+                        <?php echo $id_card ? 'value="' . htmlspecialchars($card['firstName'] . ' ' . $card['lastName']) . '"' : ''; ?>>
                     <label for="expiry_date">Ngày hết hạn:</label>
-                    <input type="text" id="expiry_date" name="expiry_date" disabled>
+                    <input type="text" id="expiry_date" name="expiry_date" disabled
+                        <?php echo $id_card ? 'value="' . htmlspecialchars($card['expDate']) . '"' : ''; ?>>
                     <label for="cvv">CVV:</label>
-                    <input type="text" id="cvv" name="cvv" disabled>
+                    <input type="text" id="cvv" name="cvv" disabled
+                        <?php echo $id_card ? 'value="' . htmlspecialchars($card['cvv']) . '"' : ''; ?>>
                     <label for="amount">Số tiền muốn rút:</label>
                     <input type="text" id="amount" name="amount" required>
                     <input type="hidden" id="hidden_amount" name="hidden_amount">
                     <input type="submit" name="withdraw" value="Rút tiền">
                 </form>
+
+                <!-- Form nhập OTP -->
+                <?php if (isset($show_otp_form) && $show_otp_form): ?>
+                <form id="otp-form" method="post" action="" style="display:block;">
+                    <label for="otp">Nhập mã OTP:</label>
+                    <input type="password" id="otp" name="otp" required>
+                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
+                </form>
+                <?php else: ?>
+                <form id="otp-form" method="post" action="" style="display:none;">
+                    <label for="otp">Nhập mã OTP:</label>
+                    <input type="password" id="otp" name="otp" required>
+                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
+                </form>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -130,19 +175,14 @@ $conn->close();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
     $(document).ready(function() {
-        // Định dạng số tiền theo dạng xxx.xxx.xxx
-        function formatNumber(number) {
+         // Định dạng số tiền theo dạng xxx.xxx.xxx
+         function formatNumber(number) {
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
-
-        // Chuyển đổi định dạng số tiền từ xxx.xxx.xxx về số nguyên
-        function parseNumber(formattedNumber) {
-            return formattedNumber.replace(/\./g, '');
         }
 
         // Kiểm tra số tiền nhập vào và hiển thị thông báo lỗi nếu cần
         function validateAmount(amount) {
-            var numericValue = parseInt(parseNumber(amount), 10);
+            var numericValue = parseInt(amount.replace(/\./g, ''), 10);
             if (numericValue > 10000) {
                 toastr.error("Vui lòng không nhập quá 10.000$");
                 return false;
@@ -151,14 +191,12 @@ $conn->close();
         }
 
         $('#amount').on('input', function() {
-            var value = $(this).val();
-            if (value.length > 0 && !isNaN(parseNumber(value))) {
-                var formattedValue = formatNumber(parseNumber(value));
+            var value = $(this).val().replace(/\./g, ''); // Loại bỏ dấu chấm hiện tại
+            if (!isNaN(value) && value.length > 0) {
+                var formattedValue = formatNumber(value);
                 $(this).val(formattedValue);
-                $('#hidden_amount').val(parseNumber(formattedValue)); // Cập nhật giá trị số nguyên vào hidden input
-                validateAmount(formattedValue); // Kiểm tra số tiền
-            } else {
-                $('#hidden_amount').val(''); // Nếu không hợp lệ, đặt giá trị vào hidden input là rỗng
+                $('#hidden_amount').val(value); // Cập nhật giá trị số nguyên vào hidden input
+                validateAmount(value); // Kiểm tra số tiền
             }
         });
 
@@ -169,13 +207,7 @@ $conn->close();
             }
         });
 
-        // Hiển thị thông báo nếu có
-        <?php if (isset($_SESSION['with_draw_error'])) : ?>
-        toastr.error("<?php echo $_SESSION['with_draw_error']; ?>");
-        <?php unset($_SESSION['with_draw_error']); ?>
-        <?php endif; ?>
 
-        // Xử lý sự kiện khi chọn thẻ
         $('#card_id').on('change', function() {
             var selectedOption = $(this).find('option:selected');
             var name = selectedOption.data('name');
@@ -187,10 +219,17 @@ $conn->close();
             $('#cvv').val(cvv);
         });
 
-        // Tự động chọn thẻ và điền thông tin nếu có id_card
-        if ($('#card_id').val()) {
-            $('#card_id').trigger('change');
-        }
+        // Hiển thị thông báo nếu có
+        <?php if (isset($_SESSION['with_draw_error'])) : ?>
+        toastr.error("<?php echo $_SESSION['with_draw_error']; ?>");
+        <?php unset($_SESSION['with_draw_error']); ?>
+        <?php endif; ?>
+
+        // Hiển thị form OTP nếu có
+        <?php if (isset($show_otp_form) && $show_otp_form) : ?>
+        $('#withdraw-form').hide();
+        $('#otp-form').show();
+        <?php endif; ?>
     });
     </script>
 </body>

@@ -70,9 +70,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                                 } elseif ($row['status'] == '1') {
                                     $statusText = 'thành công';
                                 } elseif ($row['status'] == '2') {
-                                    $statusText = 'thất bại';
+                                    $statusText = 'thất bại (' . $row['reason'] . ')';
                                 }
-
                                 echo "<tr>
                                         <td><a href='/user/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
                                         <td>{$row['type']}</td>

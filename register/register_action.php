@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         // Thêm người dùng mới vào cơ sở dữ liệu
-        $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+        $stmt = $conn->prepare("INSERT INTO users (username, password, create_at) VALUES (?, ?, NOW())");
         $stmt->bind_param("ss", $username, $password);
         if ($stmt->execute()) {
             $_SESSION['success_register'] = "Đăng ký thành công!";
