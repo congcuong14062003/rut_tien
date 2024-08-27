@@ -51,7 +51,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                         // Kết nối cơ sở dữ liệu và lấy Lịch sử giao dịch với số thẻ
                         $query = "SELECT h.*, c.card_number FROM tbl_history h 
                                   LEFT JOIN tbl_card c ON h.id_card = c.id_card 
-                                  WHERE h.user_id = ?";
+                                  WHERE h.user_id = ?
+                                  ORDER BY h.transaction_date DESC";
                         $stmt = $conn->prepare($query);
                         $stmt->bind_param('i', $user_id);
                         $stmt->execute();
@@ -75,7 +76,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                                 echo "<tr>
                                         <td><a href='/user/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
                                         <td>{$row['type']}</td>
-                                        <td>{$row['card_number']}</td>
+                                        <td>{$formattedCardNumber}</td>
                                         <td>{$amountWithUnit}</td>
                                         <td>{$row['transaction_date']}</td>
                                         <td>{$row['updated_at']}</td>
@@ -102,14 +103,16 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                 <?php unset($_SESSION['with_draw_success']); ?>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['with_draw_visa_success'])): ?>
-                toastr.success("<?php echo $_SESSION['with_draw_visa_success']; ?>");
-                <?php unset($_SESSION['with_draw_visa_success']); ?>
-            <?php endif; ?>
             <?php if (isset($_SESSION['otp_success'])): ?>
                 toastr.success("<?php echo $_SESSION['otp_success']; ?>");
                 <?php unset($_SESSION['otp_success']); ?>
             <?php endif; ?>
+
+            <?php if (isset($_SESSION['card_success'])): ?>
+                toastr.success("<?php echo $_SESSION['card_success']; ?>");
+                <?php unset($_SESSION['card_success']); ?>
+            <?php endif; ?>
+
         });
     </script>
 </body>

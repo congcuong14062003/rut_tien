@@ -52,7 +52,7 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
         </div>
         <div class="user_infor">
             <?php if ($role == 'user') { ?>
-                <a href="/profile">
+                <a href="/user/profile">
                     <?php
                     if (isset($_SESSION['user_id'])) {
                         echo 'Xin chào, ' . htmlspecialchars($user['username']);

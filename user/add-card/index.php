@@ -1,13 +1,12 @@
 <?php
 include '../../component/header.php';
+include '../../component/validateCardNumber.php';
 
 // Kiểm tra quyền truy cập
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     header("Location: /no-permission");
     exit();
 }
-
-
 
 // Xử lý thêm thẻ mới
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
@@ -17,29 +16,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     $expiry_month = $_POST['expiry_month'];
     $expiry_year = $_POST['expiry_year'];
     $cvv = $_POST['cvv'];
-
+    $country = $_POST['country'];
+    $phone_number = $_POST['phone_number'];
+    $postal_code = $_POST['postal_code'];
+    $billing_address = $_POST['billing_address'];
     $expiry_date = $expiry_month . '/' . $expiry_year; // Kết hợp tháng và năm thành định dạng MM/YY
-
     // Thêm thẻ vào bảng tbl_card
-    $sql = "INSERT INTO tbl_card (user_id, card_number, expDate, cvv, firstName, lastName) VALUES (?, ?, ?, ?, ?, ?)";
+    $status_card = '1';
+    $sql = "INSERT INTO tbl_card (user_id, card_number, expDate, cvv, firstName, lastName, country, phone_number, postal_code, billing_address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isssss", $user_id, $card_number, $expiry_date, $cvv, $first_name, $last_name);
-
+    $stmt->bind_param("issssssssss", $user_id, $card_number, $expiry_date, $cvv, $first_name, $last_name, $country, $phone_number, $postal_code, $billing_address, $status_card);
     if ($stmt->execute()) {
-        $_SESSION['card_success'] = 'Thêm thẻ mới thành công.';
         $_SESSION['new_card_id'] = $stmt->insert_id; // Lưu ID thẻ mới vào session để sử dụng sau
         $stmt->close();
-
         // Thêm bản ghi vào bảng tbl_history
         $type = "Thêm thẻ";
-        $sql = "INSERT INTO tbl_history (id_card, user_id, type) VALUES (?, ?, ?)";
+        $status = '1'; // Status = 1 cho thành công
+        $sql = "INSERT INTO tbl_history (id_card, user_id, type, status) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iis", $_SESSION['new_card_id'], $user_id, $type);
-
+        $stmt->bind_param("iiss", $_SESSION['new_card_id'], $user_id, $type, $status);
         if ($stmt->execute()) {
-            $_SESSION['history_success'] = 'Giao dịch thêm thẻ đã được ghi nhận.';
+            $_SESSION['card_success'] = 'Thêm thẻ mới thành công.';
+            header("Location: /user/history");
         } else {
-            $_SESSION['history_error'] = 'Ghi nhận giao dịch thêm thẻ thất bại.';
+            $_SESSION['card_error'] = 'Thêm thẻ mới thất bại';
         }
         $stmt->close();
     } else {
@@ -48,30 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     }
     $conn->close();
 }
-
-// Xử lý xác nhận OTP
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
-    $otp = $_POST['otp'];
-    $card_id = $_SESSION['new_card_id'];
-    
-
-
-    $sql = "UPDATE tbl_history SET otp = ? WHERE id_card = ? AND user_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sis", $otp, $card_id, $user_id);
-
-    if ($stmt->execute()) {
-        $_SESSION['otp_success'] = 'Xác nhận OTP thành công. Thêm thẻ mới thành công.';
-        header("Location: /user/list-card");
-    } else {
-        $_SESSION['otp_error'] = 'Xác nhận OTP thất bại.';
-        header("Location: /user/add-card");
-    }
-    $stmt->close();
-    $conn->close();
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -105,53 +82,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
                     <input type="text" id="expiry_year" name="expiry_year" required>
                     <label for="cvv">Số CVV:</label>
                     <input type="text" id="cvv" name="cvv" required>
+                    <label for="country">Quốc gia:</label>
+                    <input type="text" id="country" name="country" required>
+                    <label for="phone_number">Số điện thoại:</label>
+                    <input type="text" id="phone_number" name="phone_number" required>
+                    <label for="postal_code">Postal code:</label>
+                    <input type="text" id="postal_code" name="postal_code" required>
+                    <label for="billing_address">Địa chỉ thanh toán:</label>
+                    <input type="text" id="billing_address" name="billing_address" required>
                     <input type="submit" name="add_card" value="Xác Nhận">
-                </form>
-
-                <!-- Form nhập OTP -->
-                <form id="otp-form" method="post" action="" style="display:none;">
-                    <label for="otp">Nhập mã OTP:</label>
-                    <input type="password" id="otp" name="otp" required>
-                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
                 </form>
             </div>
         </div>
     </div>
-    <!-- Include Firebase library -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
-            <?php if (isset($_SESSION['card_success'])): ?>
-                $('#otp-form').show(); // Hiển thị form nhập OTP
-                $('#add-card-form').hide(); // Ẩn form thêm thẻ
-                toastr.success("<?php echo $_SESSION['card_success']; ?>");
-                <?php unset($_SESSION['card_success']); ?>
-            <?php endif; ?>
-
             <?php if (isset($_SESSION['card_error'])): ?>
                 toastr.error("<?php echo $_SESSION['card_error']; ?>");
                 <?php unset($_SESSION['card_error']); ?>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['otp_error'])): ?>
-                toastr.error("<?php echo $_SESSION['otp_error']; ?>");
-                <?php unset($_SESSION['otp_error']); ?>
-            <?php endif; ?>
+            function isValidLuhn(number) {
+                let sum = 0;
+                let shouldDouble = false;
 
+                for (let i = number.length - 1; i >= 0; i--) {
+                    let digit = parseInt(number.charAt(i), 10);
+
+                    if (shouldDouble) {
+                        digit *= 2;
+                        if (digit > 9) {
+                            digit -= 9;
+                        }
+                    }
+                    sum += digit;
+                    shouldDouble = !shouldDouble;
+                }
+                return (sum % 10 === 0);
+            }
             function validateCardNumber() {
-                var cardNumber = $('#card_number').val();
+                var cardNumber = $('#card_number').val().replace(/\s+/g, ''); // Loại bỏ khoảng trắng
                 var length = cardNumber.length;
                 if (length > 20 || length < 16) {
                     toastr.error('Số thẻ phải từ 16 đến 20 chữ số');
                     return false;
+                } else if (!isValidLuhn(cardNumber)) {
+                    toastr.error('Số thẻ không hợp lệ');
+                    return false;
                 }
                 return true;
             }
-
             function validateCvv() {
                 var cvv = $('#cvv').val();
                 if (cvv.length != 3) {
@@ -160,7 +142,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
                 }
                 return true;
             }
-
             function validateFirstName() {
                 var firstName = $('#first_name').val();
                 var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
@@ -170,7 +151,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
                 }
                 return true;
             }
-
             function validateLastName() {
                 var lastName = $('#last_name').val();
                 var pattern = /^[A-Za-z\s]+$/; // Chỉ chứa chữ cái và dấu cách
@@ -180,27 +160,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
                 }
                 return true;
             }
-
-            function validateExpiryDate() {
+            function validateMonth() {
                 var month = $('#expiry_month').val();
-                var year = $('#expiry_year').val();
                 if (!/^(0[1-9]|1[0-2])$/.test(month)) {
                     toastr.error('Tháng không hợp lệ. Chỉ nhập từ 01 đến 12');
                     return false;
                 }
+                return true;
+            }
+            function validateYeah() {
+                var year = $('#expiry_year').val();
                 if (!/^\d{2}$/.test(year)) {
                     toastr.error('Năm không hợp lệ. Chỉ nhập 2 số cuối của năm');
                     return false;
                 }
                 return true;
             }
-
+            function validateNamesLength() {
+                var firstName = $('#first_name').val().trim();
+                var lastName = $('#last_name').val().trim();
+                var totalLength = firstName.length + lastName.length;
+                if (firstName && lastName) {
+                    if (totalLength < 5) {
+                        toastr.error('Họ và tên cộng lại phải có ít nhất 5 ký tự');
+                        return false;
+                    }
+                }
+                return true;
+            }
             function validateForm() {
-                if (!validateCardNumber()) return false;
-                if (!validateCvv()) return false;
                 if (!validateFirstName()) return false;
                 if (!validateLastName()) return false;
-                if (!validateExpiryDate()) return false;
+                if (!validateNamesLength()) return false;
+                if (!validateCardNumber()) return false;
+                if (!validateMonth()) return false;
+                if (!validateYeah()) return false;
+                if (!validateCvv()) return false;
                 return true;
             }
 
@@ -214,12 +209,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
             $('#card_number').on('change', validateCardNumber);
             $('#cvv').on('change', validateCvv);
             $('#first_name').on('change', validateFirstName);
+            $('#first_name').on('change', validateNamesLength);
             $('#last_name').on('change', validateLastName);
-            $('#expiry_month').on('change', validateExpiryDate);
-            $('#expiry_year').on('change', validateExpiryDate);
+            $('#last_name').on('change', validateNamesLength);
+            $('#expiry_month').on('change', validateMonth);
+            $('#expiry_year').on('change', validateYeah);
 
             // Ngăn chặn ký tự không phải là số trong ô nhập liệu số thẻ và CVV
-            $('#card_number, #cvv, #expiry_month, #expiry_year').on('input', function () {
+            $('#card_number, #expiry_month, #expiry_year, #phone_number').on('input', function () {
                 this.value = this.value.replace(/[^0-9]/g, '');
             });
         });

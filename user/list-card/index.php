@@ -71,7 +71,7 @@ include '../../component/formatAmount.php';
                                 $statusText = getStatusText($row['status']);
                                 echo "<tr>
                                         <td>{$row['firstName']} {$row['lastName']}</td>
-                                        <td>{$row['card_number']}</td>
+                                        <td>{$formattedCardNumber}</td>
                                         <td>{$row['expDate']}</td>
                                         <td>{$statusText}</td>
                                         <td>{$formattedAmount}</td>";
@@ -104,10 +104,6 @@ include '../../component/formatAmount.php';
         <?php unset($_SESSION['card_success']); ?>
         <?php endif; ?>
     });
-     <?php if (isset($_SESSION['otp_success'])) : ?>
-        toastr.success("<?php echo $_SESSION['otp_success']; ?>");
-        <?php unset($_SESSION['otp_success']); ?>
-        <?php endif; ?>
     </script>
 </body>
 

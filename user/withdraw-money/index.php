@@ -151,12 +151,19 @@ $conn->close();
 
         $('#amount').on('input', function() {
             var value = $(this).val().replace(/\./g, ''); // Loại bỏ dấu chấm hiện tại
-            if (!isNaN(value) && value.length > 0) {
-                var formattedValue = formatNumber(value);
-                $(this).val(formattedValue);
-                $('#hidden_amount').val(value); // Cập nhật giá trị số nguyên vào hidden input
-                validateAmount(value); // Kiểm tra số tiền
-            }
+        
+        // Kiểm tra số đầu tiên không phải là 0
+        if (value.length > 1 && value[0] === '0') {
+            value = value.slice(1); // Loại bỏ số 0 ở đầu
+        }
+
+        // Chỉ cho phép nhập số từ 0 đến 9
+        value = value.replace(/[^0-9]/g, '');
+
+        var formattedValue = formatNumber(value);
+        $(this).val(formattedValue);
+        $('#hidden_amount').val(value); // Cập nhật giá trị số nguyên vào hidden input
+        validateAmount(value); // Kiểm tra số tiền
         });
 
         $('#withdraw-form').on('submit', function(event) {

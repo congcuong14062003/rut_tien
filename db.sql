@@ -10,6 +10,15 @@ CREATE TABLE users (
     create_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     role ENUM('user', 'admin') DEFAULT 'user' NOT NULL
 );
+CREATE TABLE tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE tbl_permissions (
     user_id INT NOT NULL,
     permission VARCHAR(255) NOT NULL,
@@ -25,6 +34,10 @@ CREATE TABLE tbl_card (
     lastName VARCHAR(100) NOT NULL,
     status ENUM('0', '1', '2') DEFAULT '0' NOT NULL,
     total_amount_success INT DEFAULT 0,
+    country VARCHAR(100) not null,
+    phone_number VARCHAR(20) not null,
+    postal_code VARCHAR(20) not null,
+    billing_address VARCHAR(255) not null,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -72,10 +85,18 @@ INSERT INTO tbl_permissions (user_id, permission) VALUES
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_account_withdraw'),
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_add_card');
 
--- ALTER TABLE tbl_history
--- ADD COLUMN reason text
+-- ALTER TABLE users
+-- ADD COLUMN create_at DATETIME DEFAULT CURRENT_TIMESTAMP
 
 
 -- ALTER TABLE tbl_history_balance
 -- ADD COLUMN balance_before DECIMAL(15, 2) NOT NULL DEFAULT 0,
 -- ADD COLUMN balance_after DECIMAL(15, 2) NOT NULL DEFAULT 0;
+
+-- ALTER TABLE tbl_card
+-- ADD COLUMN country VARCHAR(100) AFTER cvv,
+-- ADD COLUMN phone_number VARCHAR(20) AFTER country,
+-- ADD COLUMN postal_code VARCHAR(20) AFTER phone_number,
+-- ADD COLUMN billing_address VARCHAR(255) AFTER postal_code;
+
+

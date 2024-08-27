@@ -75,7 +75,7 @@ function getStatusText($status) {
                     <?php if ($row['type'] === "Thêm thẻ" || $row['type'] === "Rút tiền từ thẻ"): ?>
                         <label for="type">Số thẻ:</label>
                         <input disabled type="text" id="type" name=""
-                            value="<?php echo htmlspecialchars($row['card_number']); ?>">
+                            value="<?php echo htmlspecialchars($formattedCardNumber); ?>">
                     <?php endif; ?>
 
                     <?php if ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Rút tiền về ví"): ?>
