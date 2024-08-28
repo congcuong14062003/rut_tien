@@ -38,7 +38,6 @@ if ($id_card) {
 }
 
 // Xử lý form rút tiền
-$show_otp_form = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $amount = $_POST['hidden_amount'];
     $card_id = $_POST['card_id'];
@@ -53,34 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
         $update_stmt->bind_param('ii', $amount, $card_id);
         $update_stmt->execute();
         $update_stmt->close();
-        $_SESSION['new_withdraw_id'] = $stmt->insert_id;
-        $show_otp_form = true;
-        $_SESSION['with_draw_visa_success'] = "Rút tiền thành công";
-    } else {
-        $_SESSION['with_draw_visa_error'] = "Rút tiền thất bại!";
-    }
-    $stmt->close();
-}
-
-// Xử lý xác nhận OTP
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_otp'])) {
-    $otp = $_POST['otp'];
-    $withdraw_id = $_SESSION['new_withdraw_id'];
-
-    $sql = "UPDATE tbl_history SET otp = ? WHERE id_history = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $otp, $withdraw_id);
-
-    if ($stmt->execute()) {
-        $_SESSION['otp_success'] = 'Xác nhận OTP thành công. Rút tiền đã được thực hiện.';
+        $_SESSION['with_draw_visa_success'] = "Yêu cầu rút tiền thành công";
         header("Location: /user/history");
-        exit();
     } else {
-        $_SESSION['otp_error'] = 'Xác nhận OTP thất bại.';
+        $_SESSION['with_draw_visa_error'] = "Yêu cầu rút tiền thất bại!";
     }
-
     $stmt->close();
-    $conn->close();
 }
 
 $conn->close();
@@ -119,7 +96,7 @@ $conn->close();
                 <h1 class="title">Rút tiền từ thẻ</h1>
 
                 <!-- Form rút tiền -->
-                <form id="withdraw-form" method="post" action="" style="<?php echo $show_otp_form ? 'display:none;' : ''; ?>">
+                <form id="withdraw-form" method="post" action="">
                     <label for="card_id">Số thẻ:</label>
                     <select id="card_id" name="card_id" required>
                         <option value="" disabled selected>Chọn thẻ</option>
@@ -147,13 +124,6 @@ $conn->close();
                     <input type="hidden" id="hidden_amount" name="hidden_amount">
                     <input type="submit" name="withdraw" value="Rút tiền">
                 </form>
-
-                <!-- Form nhập OTP -->
-                <form id="otp-form" method="post" action="" style="<?php echo $show_otp_form ? 'display:block;' : 'display:none;'; ?>">
-                    <label for="otp">Nhập mã OTP:</label>
-                    <input type="password" id="otp" name="otp" required>
-                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
-                </form>
             </div>
         </div>
     </div>
@@ -161,10 +131,6 @@ $conn->close();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(document).ready(function() {
-            <?php if (isset($_SESSION['with_draw_visa_success'])): ?>
-                toastr.success("<?php echo $_SESSION['with_draw_visa_success']; ?>");
-                <?php unset($_SESSION['with_draw_visa_success']); ?>
-            <?php endif; ?>
             <?php if (isset($_SESSION['with_draw_visa_error'])): ?>
                 toastr.success("<?php echo $_SESSION['with_draw_visa_error']; ?>");
                 <?php unset($_SESSION['with_draw_visa_error']); ?>

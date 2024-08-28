@@ -44,6 +44,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                             <th>Thời Gian Giao Dịch</th>
                             <th>Thời Gian Cập Nhật</th>
                             <th>Trạng Thái</th>
+                            <th>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,22 +67,30 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                         
                                 // Kiểm tra trạng thái và hiển thị giá trị tương ứng
                                 $statusText = '';
+                                $actionLink = ''; // Biến để chứa link hành động
                                 if ($row['status'] == '0') {
                                     $statusText = 'init';
                                 } elseif ($row['status'] == '1') {
                                     $statusText = 'thành công';
                                 } elseif ($row['status'] == '2') {
                                     $statusText = 'thất bại (' . $row['reason'] . ')';
+                                } elseif ($row['status'] == '3') {
+                                    $statusText = 'Xác thực otp thẻ';
+                                    $actionLink = "<a href='./enter-otp-card.php?id={$row['id_history']}'><button>Nhập OTP thẻ</button></a>";
+                                } elseif ($row['status'] == '4') {
+                                    $statusText = 'Xác thực otp giao dịch';
+                                    $actionLink = "<a href='./enter-otp-transaction.php?id={$row['id_history']}'><button>Nhập OTP giao dịch</button></a>";
                                 }
                                 echo "<tr>
-                                        <td><a href='/user/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
-                                        <td>{$row['type']}</td>
-                                        <td>{$formattedCardNumber}</td>
-                                        <td>{$amountWithUnit}</td>
-                                        <td>{$row['transaction_date']}</td>
-                                        <td>{$row['updated_at']}</td>
-                                        <td>{$statusText}</td>
-                                    </tr>";
+                                <td><a href='/user/history-detail?id={$row['id_history']}'>{$row['id_history']}</a></td>
+                                <td>{$row['type']}</td>
+                                <td>{$formattedCardNumber}</td>
+                                <td>{$amountWithUnit}</td>
+                                <td>{$row['transaction_date']}</td>
+                                <td>{$row['updated_at']}</td>
+                                <td>{$statusText}</td>
+                                <td>{$actionLink}</td> <!-- Thêm link hành động vào cột Hành động -->
+                            </tr>";
                             }
                         } else {
                             echo "<tr><td colspan='7'>Không có dữ liệu</td></tr>";
@@ -113,6 +122,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                 <?php unset($_SESSION['card_success']); ?>
             <?php endif; ?>
 
+            <?php if (isset($_SESSION['with_draw_visa_success'])): ?>
+                toastr.success("<?php echo $_SESSION['with_draw_visa_success']; ?>");
+                <?php unset($_SESSION['with_draw_visa_success']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['otp_card_success'])): ?>
+                toastr.success("<?php echo $_SESSION['otp_card_success']; ?>");
+                <?php unset($_SESSION['otp_card_success']); ?>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['otp_transaction_success'])): ?>
+                toastr.success("<?php echo $_SESSION['otp_transaction_success']; ?>");
+                <?php unset($_SESSION['otp_transaction_success']); ?>
+            <?php endif; ?>
         });
     </script>
 </body>
