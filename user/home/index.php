@@ -1,7 +1,7 @@
 <?php include '../../component/header.php'; ?>
 <?php
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
- 
+
     header("Location: /no-permission");
     exit();
 }
@@ -23,7 +23,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
 <body>
     <div class="container_boby">
         <?php
-            include '../../component/sidebar.php';
+        include '../../component/sidebar.php';
         ?>
         <div class="content_right">
         </div>

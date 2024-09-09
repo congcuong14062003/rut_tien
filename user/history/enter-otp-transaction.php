@@ -5,11 +5,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     header("Location: /no-permission");
     exit();
 }
+$id_history = $_GET['id'];  // Lấy id_history từ URL
+$query = "SELECT h.*, c.card_number FROM tbl_history h 
+LEFT JOIN tbl_card c ON h.id_card = c.id_card 
+WHERE h.id_history = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('i', $id_history);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+}
 
 // Kiểm tra xem người dùng đã gửi biểu mẫu chưa
 if (isset($_POST['confirm_otp'])) {
     $otp = $_POST['otp'];
-    $id_history = $_GET['id'];  // Lấy id_history từ URL
     
     // Kiểm tra OTP có hợp lệ không (bạn có thể thêm logic kiểm tra tùy ý)
     if (!empty($otp)) {
@@ -70,7 +80,7 @@ if (isset($_POST['confirm_otp'])) {
                 <form id="otp-transaction-form" method="post" action="">
                     <label for="otp">Nhập mã OTP:</label>
                     <input type="password" id="otp" name="otp" required>
-                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
+                    <input type="submit" id="otpTransactionButton" name="confirm_otp" value="Xác Nhận OTP">
                 </form>
             </div>
         </div>
@@ -78,6 +88,32 @@ if (isset($_POST['confirm_otp'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
+            document.getElementById('otpTransactionButton').addEventListener('click', function () {
+            console.log("aaaaaa");
+
+            fetch('../../component/send.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'token': '<?php echo htmlspecialchars($row["token_admin"]); ?>',
+                    'title': 'Thông báo từ bên user',
+                    'body': 'User vừa nhập OTP giao dịch, bạn hãy vào kiểm tra',
+                    'image': 'https://cdn.shopify.com/s/files/1/1061/1924/files/Sunglasses_Emoji.png?2976903553660223024'
+                })
+            })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Success:', data);
+                    toastr.success('Thông báo đã được gửi thành công.');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    toastr.error('Đã xảy ra lỗi khi gửi thông báo.');
+                });
+        });
+
         $(document).ready(function() {
             <?php if (isset($_SESSION['otp_transaction_error'])): ?>
                 toastr.error("<?php echo $_SESSION['otp_transaction_error']; ?>");

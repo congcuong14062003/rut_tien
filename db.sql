@@ -8,8 +8,10 @@ CREATE TABLE users (
     balance int default 0,
     email varchar(45),
     create_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    firebase_token varchar(255),
     role ENUM('user', 'admin') DEFAULT 'user' NOT NULL
 );
+
 CREATE TABLE tokens (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -86,8 +88,9 @@ INSERT INTO tbl_permissions (user_id, permission) VALUES
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_account_withdraw'),
 ((SELECT id FROM users WHERE username = 'admin'), 'approve_add_card');
 
--- ALTER TABLE users
--- ADD COLUMN create_at DATETIME DEFAULT CURRENT_TIMESTAMP
+ALTER TABLE tbl_history
+ADD COLUMN token_user varchar(255),
+ADD COLUMN token_admin varchar(255)
 
 
 -- ALTER TABLE tbl_history_balance

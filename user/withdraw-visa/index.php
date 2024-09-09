@@ -9,6 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
 
 // Lấy thông tin từ URL
 $id_card = isset($_GET['id_card']) ? $_GET['id_card'] : '';
+// Lấy giá trị token từ cookie
 
 // Khai báo biến danh sách thẻ
 $cards = [];
@@ -38,20 +39,27 @@ if ($id_card) {
 }
 
 // Xử lý form rút tiền
+// Lấy giá trị token từ SESSION
+$token_user = isset($_SESSION['token_user']) ? $_SESSION['token_user'] : '';
+
+
+// Xử lý form rút tiền
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $amount = $_POST['hidden_amount'];
     $card_id = $_POST['card_id'];
 
-    $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card) VALUES (?, ?, ?, NOW(), NOW(), ?)";
+    $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card, token_user) VALUES (?, ?, ?, NOW(), NOW(), ?, ?)";
     $stmt = $conn->prepare($history_query);
     $type = 'Rút tiền từ thẻ';
-    $stmt->bind_param('isii', $_SESSION['user_id'], $type, $amount, $card_id);
+    $stmt->bind_param('isiss', $_SESSION['user_id'], $type, $amount, $card_id, $token_user);
+    
     if ($stmt->execute()) {
         $update_query = "UPDATE tbl_card SET total_amount_success = total_amount_success + ? WHERE id_card = ?";
         $update_stmt = $conn->prepare($update_query);
         $update_stmt->bind_param('ii', $amount, $card_id);
         $update_stmt->execute();
         $update_stmt->close();
+
         $_SESSION['with_draw_visa_success'] = "Yêu cầu rút tiền thành công";
         header("Location: /user/history");
     } else {
@@ -59,13 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     }
     $stmt->close();
 }
-
 $conn->close();
 ?>
 
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,8 +82,7 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Rút tiền</title>
     <style>
-    input,
-    select {
+    input, select {
         width: 100%;
         padding: 10px;
         margin: 10px 0;
@@ -87,14 +92,12 @@ $conn->close();
     }
     </style>
 </head>
-
 <body>
     <div class="container_boby">
         <?php include '../../component/sidebar.php'; ?>
         <div class="content_right container_form">
             <div class="container">
                 <h1 class="title">Rút tiền từ thẻ</h1>
-
                 <!-- Form rút tiền -->
                 <form id="withdraw-form" method="post" action="">
                     <label for="card_id">Số thẻ:</label>
@@ -188,5 +191,4 @@ $conn->close();
         });
     </script>
 </body>
-
 </html>

@@ -60,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     <link rel="stylesheet" href="../../component/sidebar.css">
     <link rel="stylesheet" href="./addcard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
     <title>Thông Tin Tài Khoản</title>
 </head>
 

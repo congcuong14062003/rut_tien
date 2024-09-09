@@ -3,15 +3,15 @@ ob_start(); // Bật bộ đệm đầu ra
 session_start();
 // include '../db.php';
 
-$servername = "localhost";
-$username = "root";
-$password = "MyNewPass";
-$dbname = "payment_management";
+// $servername = "localhost";
+// $username = "root";
+// $password = "MyNewPass";
+// $dbname = "payment_management";
 
-// $servername = "10.130.20.98";
-// $username = "admin";
-// $password = "Citybank@2024";
-// $dbname = "visawd";
+$servername = "10.130.20.98";
+$username = "admin";
+$password = "Citybank@2024";
+$dbname = "visawd";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -33,7 +33,12 @@ $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
-$role = $user['role']; // 'user' hoặc 'admin'
+$role = $user['role']; // 'user' hoặc 'admin
+
+// echo "<pre>";
+// var_dump($user);
+// echo "</pre>";
+
 $formattedBalance = number_format($user['balance'], 0, ',', '.');
 ?>
 
@@ -132,7 +137,6 @@ $formattedBalance = number_format($user['balance'], 0, ',', '.');
         </div>
     </div>
 </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const menuIcon = document.querySelector('.icon-mobile');

