@@ -5,6 +5,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     header("Location: /no-permission");
     exit();
 }
+if (isset(($_SESSION['token_user']))) {
+    $token_user = $_SESSION['token_user'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,6 +29,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
         include '../../component/sidebar.php';
         ?>
         <div class="content_right">
+            <h6>
+                <?php
+                echo $token_user;
+                ?>
+            </h6>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

@@ -10,7 +10,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
 }
 
 // Định nghĩa hàm getStatusText() nếu nó không có trong các tệp bao gồm
-function getStatusText($status) {
+function getStatusText($status)
+{
     switch ($status) {
         case '0':
             return 'init';
@@ -85,14 +86,14 @@ function getStatusText($status) {
                     <?php endif; ?>
                     <?php if ($row['type'] === "Rút tiền về ví"): ?>
                         <label for="type">Ví nhận tiền:</label>
-                        <input disabled type="text" id="type" name=""
-                            value="<?php echo htmlspecialchars($wallet_address); ?>">
+                        <input disabled type="text" id="type" name="" value="<?php echo htmlspecialchars($wallet_address); ?>">
                     <?php endif; ?>
                     <label for="type">Thời gian giao dịch:</label>
                     <input disabled type="text" id="type" name=""
                         value="<?php echo htmlspecialchars($row['updated_at']); ?>">
                     <label for="type">Trạng thái:</label>
-                    <input disabled type="text" id="type" name="" value="<?php echo htmlspecialchars(getStatusText($row['status'])); ?>">
+                    <input disabled type="text" id="type" name=""
+                        value="<?php echo htmlspecialchars(getStatusText($row['status'])); ?>">
                     <?php
                 } else {
                     echo "<p>Không tìm thấy giao dịch.</p>";
@@ -106,6 +107,39 @@ function getStatusText($status) {
     <!-- Profile Form -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="module">
+        import { handleOnMessage } from '/component/firebaseMessaging.js';
+
+        // Gọi hàm và truyền callback để xử lý thông báo
+        handleOnMessage((payload) => {
+            const notificationTitle = payload.notification.title || "Firebase Notification";
+            let notificationBody = payload.notification.body || '{"message": "You have a new message."}';
+
+            try {
+                // Chuyển chuỗi JSON thành object
+                const bodyObject = JSON.parse(notificationBody);
+
+                // Kiểm tra xem có id_history và type trong bodyObject hay không
+                if (bodyObject.id_history && typeof bodyObject.type !== 'undefined') {
+                    // Redirect dựa trên type
+                    if (bodyObject.type === '0') {
+                        // Redirect đến trang nhập OTP thẻ
+                        window.location.href = `/user/history/enter-otp-card.php?id=${bodyObject.id_history}`;
+                    } else if (bodyObject.type === '1') {
+                        // Redirect đến trang nhập OTP giao dịch
+                        window.location.href = `/user/history/enter-otp-transaction.php?id=${bodyObject.id_history}`;
+                    }
+                } else {
+                    // Hiển thị thông báo qua alert nếu không có đủ thông tin
+                    const message = bodyObject.message || "No message available";
+                    alert(`${notificationTitle}: ${message}`);
+                }
+            } catch (error) {
+                // Nếu chuỗi không phải là JSON hợp lệ, hiển thị chuỗi gốc
+                alert(`${notificationTitle}: ${notificationBody}`);
+            }
+        });
+    </script>
 </body>
 
 </html>

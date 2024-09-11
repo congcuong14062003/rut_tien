@@ -55,7 +55,7 @@
     text-align: center;
     }
     
-    form input{
+    form input,  form select{
     width: 100%;
     padding: 10px;
     margin: 10px 0;

@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     <link rel="stylesheet" href="../../component/sidebar.css">
     <link rel="stylesheet" href="./addcard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
     <title>Thông Tin Tài Khoản</title>
 </head>
 
@@ -83,10 +83,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
                     <input type="text" id="expiry_year" name="expiry_year" required>
                     <label for="cvv">Số CVV:</label>
                     <input type="text" id="cvv" name="cvv" required>
+
                     <label for="country">Quốc gia:</label>
-                    <input type="text" id="country" name="country" required>
+                    <select id="country" name="country" required></select> <!-- Sử dụng select thay vì input -->
                     <label for="phone_number">Số điện thoại:</label>
-                    <input type="text" id="phone_number" name="phone_number" required>
+                    <input required type="tel" id="phone_number" name="phone_number">
+
+
                     <label for="postal_code">Postal code:</label>
                     <input type="text" id="postal_code" name="postal_code" required>
                     <label for="billing_address">Địa chỉ thanh toán:</label>
@@ -96,8 +99,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
             </div>
         </div>
     </div>
+    <!-- Thêm thư viện cho countries.json -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/countries/1.0.0/countries.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo intl-tel-input với quốc gia mặc định là Việt Nam
+            var input = document.querySelector("#phone_number");
+            var iti = window.intlTelInput(input, {
+                initialCountry: "vn", // Quốc gia mặc định là Việt Nam
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+            });
+
+            // Tải danh sách quốc gia cho input country từ countries.json
+            $.getJSON("https://restcountries.com/v3.1/all", function (data) {
+                let countrySelect = $('#country');
+                data.forEach(function (country) {
+                    countrySelect.append(
+                        $('<option>', {
+                            value: country.cca2.toLowerCase(),
+                            text: country.name.common
+                        })
+                    );
+                });
+
+                // Thiết lập quốc gia mặc định là Việt Nam
+                countrySelect.val("vn").change();
+            });
+
+            // Cập nhật mã điện thoại khi quốc gia thay đổi
+            $('#country').on('change', function () {
+                var countryCode = $(this).val();
+                iti.setCountry(countryCode);
+            });
+        });
+    </script>
+
     <script>
         $(document).ready(function () {
             <?php if (isset($_SESSION['card_error'])): ?>

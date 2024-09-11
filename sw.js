@@ -22,7 +22,7 @@ messaging.onBackgroundMessage((payload) => {
 
   const notificationTitle = payload.notification.title || "Firebase Notification";
   const notificationOptions = {
-    body: payload.notification.body.body_content || "You have a new message.",
+    body: payload.notification.body || "You have a new message.",
     icon: payload.notification.icon || "", // Có thể đặt icon tùy chỉnh tại đây
   };
 
