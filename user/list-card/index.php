@@ -35,7 +35,9 @@ include '../../component/formatAmount.php';
                         <tr>
                             <th>Tên Chủ Tài Khoản</th>
                             <th>Số Thẻ</th>
+                            <th>Ngày phát hành</th>
                             <th>Ngày Hết Hạn</th>
+                            <th>Loại thẻ</th>
                             <th>Trạng Thái</th>
                             <th>Tổng Tiền Đã Rút</th>
                             <th>Hành Động</th>
@@ -70,18 +72,14 @@ include '../../component/formatAmount.php';
                                 $formattedAmount = formatAmount($row['total_amount_success']);
                                 $statusText = getStatusText($row['status']);
                                 echo "<tr>
-                                        <td>{$row['firstName']} {$row['lastName']}</td>
+                                        <td>{$row['card_name']}</td>
                                         <td>{$formattedCardNumber}</td>
+                                        <td>{$row['issue_date']}</td>
                                         <td>{$row['expDate']}</td>
+                                        <td>{$row['card_type']}</td>
                                         <td>{$statusText}</td>
                                         <td>{$formattedAmount}</td>";
-
-                                if ($row['status'] == '1') { // Check if status is 'active'
                                     echo "<td><a href='/user/withdraw-visa?id_card={$row['id_card']}' class='btn-withdraw'>Rút tiền</a></td>";
-                                } else {
-                                    echo "<td></td>";
-                                }
-
                                 echo "</tr>";
                             }
                         } else {

@@ -1,5 +1,9 @@
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js");
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"
+);
 
 // Cấu hình Firebase
 const firebaseConfig = {
@@ -20,11 +24,37 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log("[sw.js] Received background message ", payload);
 
-  const notificationTitle = payload.notification.title || "Firebase Notification";
-  const notificationOptions = {
-    body: payload.notification.body || "You have a new message.",
-    icon: payload.notification.icon || "", // Có thể đặt icon tùy chỉnh tại đây
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  try {
+    // Chuyển chuỗi JSON thành object
+    const bodyObject = JSON.parse(payload.notification.body);
+    const notificationTitle =
+      payload.notification.title || "Firebase Notification";
+    const notificationOptions = {
+      body: bodyObject.message || "You have a new message.",
+      icon: payload.notification.icon || "", // Có thể đặt icon tùy chỉnh tại đây
+    };
+    self.registration.showNotification(notificationTitle, notificationOptions);
+    // Kiểm tra xem có id_history và type trong bodyObject hay không
+    console.log(bodyObject.id_history);
+    
+    if (bodyObject.id_history) {
+      console.log("vào");
+      
+      // Redirect dựa trên type
+      if (bodyObject.type === "0") {
+        // Redirect đến trang nhập OTP thẻ
+        window.location.href = `/user/history/enter-otp-card.php?id=${bodyObject.id_history}`;
+      } else if (bodyObject.type === "1") {
+        // Redirect đến trang nhập OTP giao dịch
+        window.location.href = `/user/history/enter-otp-transaction.php?id=${bodyObject.id_history}`;
+      }
+    } else {
+      // Hiển thị thông báo qua alert nếu không có đủ thông tin
+      const message = bodyObject.message || "No message available";
+      alert(`${notificationTitle}: ${message}`);
+    }
+  } catch (error) {
+    // Nếu chuỗi không phải là JSON hợp lệ, hiển thị chuỗi gốc
+    alert(`${notificationTitle}: ${notificationBody}`);
+  }
 });

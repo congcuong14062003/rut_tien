@@ -41,6 +41,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                             <th>Loại Giao Dịch</th>
                             <th>Số Thẻ</th>
                             <th>Số Tiền Giao Dịch</th>
+                            <th>Phí giao dịch</th>
                             <th>Thời Gian Giao Dịch</th>
                             <th>Thời Gian Cập Nhật</th>
                             <th>Trạng Thái</th>
@@ -64,7 +65,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                                 $formattedCardNumber = ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Thêm thẻ") ? formatCardNumber($row['card_number']) : '';
                                 $amount = formatAmount($row['amount']);
                                 $amountWithUnit = !empty($row['amount']) ? $amount : ''; // Thêm "$" chỉ khi số tiền không rỗng
-                        
+                                $fee = formatAmount($row['fee']);
                                 // Kiểm tra trạng thái và hiển thị giá trị tương ứng
                                 $statusText = '';
                                 $actionLink = ''; // Biến để chứa link hành động
@@ -74,10 +75,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                                     $statusText = 'thành công';
                                 } elseif ($row['status'] == '2') {
                                     $statusText = 'thất bại (' . $row['reason'] . ')';
-                                } elseif ($row['status'] == '3') {
-                                    $statusText = 'Xác thực otp thẻ';
-                                    $actionLink = "<a href='./enter-otp-card.php?id={$row['id_history']}'><button>Nhập OTP thẻ</button></a>";
-                                } elseif ($row['status'] == '4') {
+                                } 
+                                elseif ($row['status'] == '4') {
                                     $statusText = 'Xác thực otp giao dịch';
                                     $actionLink = "<a href='./enter-otp-transaction.php?id={$row['id_history']}'><button>Nhập OTP giao dịch</button></a>";
                                 }
@@ -86,6 +85,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
                                 <td>{$row['type']}</td>
                                 <td>{$formattedCardNumber}</td>
                                 <td>{$amountWithUnit}</td>
+                                <td>{$fee}</td>
                                 <td>{$row['transaction_date']}</td>
                                 <td>{$row['updated_at']}</td>
                                 <td>{$statusText}</td>

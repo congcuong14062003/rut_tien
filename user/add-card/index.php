@@ -10,22 +10,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
 
 // Xử lý thêm thẻ mới
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
     $card_number = $_POST['card_number'];
+    $card_name = $_POST['card_name'];
     $expiry_month = $_POST['expiry_month'];
     $expiry_year = $_POST['expiry_year'];
-    $cvv = $_POST['cvv'];
+    $issue_month = $_POST['issue_month'];
+    $issue_year = $_POST['issue_year'];
+    $cvv = !empty($_POST['cvv']) ? $_POST['cvv'] : null; // CVV không bắt buộc
     $country = $_POST['country'];
     $phone_number = $_POST['phone_number'];
     $postal_code = $_POST['postal_code'];
     $billing_address = $_POST['billing_address'];
-    $expiry_date = $expiry_month . '/' . $expiry_year; // Kết hợp tháng và năm thành định dạng MM/YY
+    $card_type = $_POST['card_type']; // Bổ sung loại thẻ
+    $expiry_date = $expiry_month . '/' . $expiry_year;
+    $issue_date = $issue_month . '/' . $issue_year;
+
     // Thêm thẻ vào bảng tbl_card
     $status_card = '1';
-    $sql = "INSERT INTO tbl_card (user_id, card_number, expDate, cvv, firstName, lastName, country, phone_number, postal_code, billing_address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // Thêm thẻ vào bảng tbl_card
+    $sql = "INSERT INTO tbl_card (user_id, card_number, card_name, expDate, issue_date, cvv, country, phone_number, postal_code, billing_address, status, card_type)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("issssssssss", $user_id, $card_number, $expiry_date, $cvv, $first_name, $last_name, $country, $phone_number, $postal_code, $billing_address, $status_card);
+    $stmt->bind_param("isssssssssss", $user_id, $card_number, $card_name, $expiry_date, $issue_date, $cvv, $country, $phone_number, $postal_code, $billing_address, $status_card, $card_type);
     if ($stmt->execute()) {
         $_SESSION['new_card_id'] = $stmt->insert_id; // Lưu ID thẻ mới vào session để sử dụng sau
         $stmt->close();
@@ -71,29 +77,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
             <div class="container">
                 <h1 class="title">Thêm thẻ</h1>
                 <form id="add-card-form" method="post" action="">
-                    <label for="first_name">First Name:</label>
-                    <input type="text" id="first_name" name="first_name" required>
-                    <label for="last_name">Last Name:</label>
-                    <input type="text" id="last_name" name="last_name" required>
-                    <label for="card_number">Số thẻ:</label>
+                    <label for="card_name">Card Name (<span style="color: red;"> *</span>):</label>
+                    <input type="text" id="card_name" name="card_name" required>
+
+                    <label for="card_number">Số thẻ (<span style="color: red;"> *</span>):</label>
                     <input type="text" id="card_number" name="card_number" required>
-                    <label for="expiry_month">Tháng hết hạn (MM):</label>
+
+                    <label for="issue_month">Tháng phát hành (MM):</label>
+                    <input type="text" id="issue_month" name="issue_month">
+
+                    <label for="issue_year">Năm phát hành (YY):</label>
+                    <input type="text" id="issue_year" name="issue_year">
+
+                    <label for="expiry_month">Tháng hết hạn (MM) (<span style="color: red;"> *</span>):</label>
                     <input type="text" id="expiry_month" name="expiry_month" required>
-                    <label for="expiry_year">Năm hết hạn (YY):</label>
+
+                    <label for="expiry_year">Năm hết hạn (YY) (<span style="color: red;"> *</span>):</label>
                     <input type="text" id="expiry_year" name="expiry_year" required>
+
                     <label for="cvv">Số CVV:</label>
-                    <input type="text" id="cvv" name="cvv" required>
+                    <input type="text" id="cvv" name="cvv">
+
+                    <label for="card_type">Loại thẻ:</label>
+                    <select id="card_type" name="card_type" required>
+                        <option value="" disabled selected>Chọn loại thẻ</option>
+                        <option value="ATM">ATM</option>
+                        <option value="VISA nội địa">VISA nội địa</option>
+                        <!-- <option selected value="VISA quốc tế">VISA quốc tế</option> -->
+                    </select>
 
                     <label for="country">Quốc gia:</label>
-                    <select id="country" name="country" required></select> <!-- Sử dụng select thay vì input -->
-                    <label for="phone_number">Số điện thoại:</label>
-                    <input required type="tel" id="phone_number" name="phone_number">
+                    <select id="country" name="country" required></select>
+
+                    <!-- Sử dụng select thay vì input -->
+                    <!-- <label for="phone_number">Số điện thoại:</label>
+                    <input required type="tel" id="phone_number" name="phone_number"> -->
 
 
-                    <label for="postal_code">Postal code:</label>
-                    <input type="text" id="postal_code" name="postal_code" required>
-                    <label for="billing_address">Địa chỉ thanh toán:</label>
-                    <input type="text" id="billing_address" name="billing_address" required>
+                    <!-- <label for="postal_code">Postal code:</label>
+                    <input type="text" id="postal_code" name="postal_code" required> -->
+
+                    <!-- <label for="billing_address">Địa chỉ thanh toán:</label>
+                    <input type="text" id="billing_address" name="billing_address" required> -->
+
                     <input type="submit" name="add_card" value="Xác Nhận">
                 </form>
             </div>
@@ -107,33 +133,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
     <script>
         $(document).ready(function () {
             // Khởi tạo intl-tel-input với quốc gia mặc định là Việt Nam
-            var input = document.querySelector("#phone_number");
-            var iti = window.intlTelInput(input, {
-                initialCountry: "vn", // Quốc gia mặc định là Việt Nam
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-            });
+            // var input = document.querySelector("#phone_number");
+            // var iti = window.intlTelInput(input, {
+            //     initialCountry: "vn", // Quốc gia mặc định là Việt Nam
+            //     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+            // });
 
             // Tải danh sách quốc gia cho input country từ countries.json
             $.getJSON("https://restcountries.com/v3.1/all", function (data) {
+                console.log(data); // Kiểm tra dữ liệu
                 let countrySelect = $('#country');
                 data.forEach(function (country) {
                     countrySelect.append(
                         $('<option>', {
-                            value: country.cca2.toLowerCase(),
-                            text: country.name.common
+                            value: country.name.common, // Lưu tên đầy đủ
+                            text: country.name.common // Hiển thị tên đầy đủ
                         })
                     );
                 });
 
                 // Thiết lập quốc gia mặc định là Việt Nam
-                countrySelect.val("vn").change();
+                countrySelect.val("Vietnam").change();
             });
 
             // Cập nhật mã điện thoại khi quốc gia thay đổi
-            $('#country').on('change', function () {
-                var countryCode = $(this).val();
-                iti.setCountry(countryCode);
-            });
+            // $('#country').on('change', function () {
+            //     var countryCode = $(this).val();
+            //     iti.setCountry(countryCode);
+            // });
         });
     </script>
 
@@ -216,28 +243,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
                 }
                 return true;
             }
-            function validateNamesLength() {
-                var firstName = $('#first_name').val().trim();
-                var lastName = $('#last_name').val().trim();
-                var totalLength = firstName.length + lastName.length;
-                if (firstName && lastName) {
-                    if (totalLength < 5) {
-                        toastr.error('Họ và tên cộng lại phải có ít nhất 5 ký tự');
-                        return false;
-                    }
+
+            function validateMonthIssue() {
+                var month = $('#issue_month').val();
+                if (!month) return true; // Nếu để trống, bỏ qua validate
+                if (!/^(0[1-9]|1[0-2])$/.test(month)) {
+                    toastr.error('Tháng phát hành không hợp lệ. Chỉ nhập từ 01 đến 12');
+                    return false;
                 }
                 return true;
             }
-            function validateForm() {
-                if (!validateFirstName()) return false;
-                if (!validateLastName()) return false;
-                if (!validateNamesLength()) return false;
-                if (!validateCardNumber()) return false;
-                if (!validateMonth()) return false;
-                if (!validateYeah()) return false;
-                if (!validateCvv()) return false;
+
+            function validateYeahIssue() {
+                var year = $('#issue_year').val();
+                if (!year) return true; // Nếu để trống, bỏ qua validate
+                if (!/^\d{2}$/.test(year)) {
+                    toastr.error('Năm phát hành không hợp lệ. Chỉ nhập 2 số cuối của năm');
+                    return false;
+                }
                 return true;
             }
+
+            function validateNamesLength() {
+                // var cardname = $('#card_name').val().trim();
+                // if (cardname > 0) {
+                //     return true;
+                // }
+            }
+            function validateForm() {
+                // if (!validateCardNumber()) return false;
+                if (!validateMonth()) return false;
+                if (!validateYeah()) return false;
+                if (!validateMonthIssue()) return false;
+                if (!validateYeahIssue()) return false;
+                return true;
+            }
+
 
             $('#add-card-form').on('submit', function (e) {
                 if (!validateForm()) {
@@ -246,17 +287,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_card'])) {
                 }
             });
 
-            $('#card_number').on('change', validateCardNumber);
-            $('#cvv').on('change', validateCvv);
-            $('#first_name').on('change', validateFirstName);
-            $('#first_name').on('change', validateNamesLength);
-            $('#last_name').on('change', validateLastName);
-            $('#last_name').on('change', validateNamesLength);
+            // $('#card_number').on('change', validateCardNumber);
+            // $('#cvv').on('change', validateCvv);
+            // $('#first_name').on('change', validateFirstName);
+            // $('#first_name').on('change', validateNamesLength);
+            // $('#last_name').on('change', validateLastName);
+            // $('#last_name').on('change', validateNamesLength);
             $('#expiry_month').on('change', validateMonth);
             $('#expiry_year').on('change', validateYeah);
+            $('#issue_month').on('change', validateMonthIssue);
+            $('#issue_year').on('change', validateYeahIssue);
 
             // Ngăn chặn ký tự không phải là số trong ô nhập liệu số thẻ và CVV
-            $('#card_number, #expiry_month, #expiry_year, #phone_number').on('input', function () {
+            $('#card_number, #expiry_month, #expiry_year, #issue_month, #issue_year, #phone_number').on('input', function () {
                 this.value = this.value.replace(/[^0-9]/g, '');
             });
         });

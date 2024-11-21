@@ -1,0 +1,740 @@
+    afAF
+    Afghanistan
+not supported
+------------
+    axAX
+    Aland Islands
+------------
+    alAL
+    Albania
+not supported
+------------
+    dzDZ
+    Algeria
+------------
+    asAS
+    American Samoa
+------------
+    adAD
+    Andorra
+------------
+    aoAO
+    Angola
+------------
+    aiAI
+    Anguilla
+------------
+    aqAQ
+    Antarctica
+------------
+    agAG
+    Antigua and Barbuda
+------------
+    arAR
+    Argentina
+------------
+    amAM
+    Armenia
+------------
+    awAW
+    Aruba
+------------
+    auAU
+    Australia
+not supported
+------------
+    atAT
+    Austria
+------------
+    azAZ
+    Azerbaijan
+------------
+    bsBS
+    Bahamas
+not supported
+------------
+    bhBH
+    Bahrain
+------------
+    bdBD
+    Bangladesh
+------------
+    bbBB
+    Barbados
+not supported
+------------
+    byBY
+    Belarus
+not supported
+------------
+    beBE
+    Belgium
+------------
+    bzBZ
+    Belize
+------------
+    bjBJ
+    Benin
+------------
+    bmBM
+    Bermuda
+------------
+    btBT
+    Bhutan
+------------
+    boBO
+    Bolivia
+------------
+    bqBQ
+    Bonaire
+------------
+    baBA
+    Bosnia and Herzegovina
+not supported
+------------
+    bwBW
+    Botswana
+not supported
+------------
+    bvBV
+    Bouvet Island
+------------
+    brBR
+    Brazil
+------------
+    ioIO
+    British Indian Ocean Territory
+------------
+    vgVG
+    British Virgin Islands
+------------
+    bnBN
+    Brunei Darussalam
+------------
+    bgBG
+    Bulgaria
+------------
+    bfBF
+    Burkina Faso
+not supported
+------------
+    biBI
+    Burundi
+------------
+    khKH
+    Cambodia
+not supported
+------------
+    cmCM
+    Cameroon
+------------
+    caCA
+    Canada
+------------
+    cvCV
+    Cape Verde
+------------
+    kyKY
+    Cayman Islands
+------------
+    cfCF
+    Central African Republic
+not supported
+------------
+    tdTD
+    Chad
+------------
+    clCL
+    Chile
+------------
+    cnCN
+    China
+------------
+    cxCX
+    Christmas Island
+------------
+    ccCC
+    Cocos (Keeling) Islands
+------------
+    coCO
+    Colombia
+------------
+    kmKM
+    Comoros
+------------
+    cgCG
+    Congo
+------------
+    ckCK
+    Cook Islands
+------------
+    crCR
+    Costa Rica
+------------
+    ciCI
+    Cote d'Ivoire
+------------
+    hrHR
+    Croatia
+------------
+    cuCU
+    Cuba
+not supported
+------------
+    cwCW
+    Curacao
+------------
+    cyCY
+    Cyprus
+------------
+    czCZ
+    Czech Republic
+------------
+    cdCD
+    Democratic Republic of the Congo
+not supported
+------------
+    dkDK
+    Denmark
+------------
+    djDJ
+    Djibouti
+------------
+    dmDM
+    Dominica
+------------
+    doDO
+    Dominican Republic
+------------
+    ecEC
+    Ecuador
+------------
+    egEG
+    Egypt
+------------
+    svSV
+    El Salvador
+------------
+    gqGQ
+    Equatorial Guinea
+------------
+    erER
+    Eritrea
+not supported
+------------
+    eeEE
+    Estonia
+------------
+    etET
+    Ethiopia
+not supported
+------------
+    fkFK
+    Falkland Islands (Malvinas)
+------------
+    foFO
+    Faroe Islands
+------------
+    fjFJ
+    Fiji
+------------
+    fiFI
+    Finland
+------------
+    frFR
+    France
+------------
+    gfGF
+    French Guiana
+------------
+    pfPF
+    French Polynesia
+------------
+    tfTF
+    French Southern Territories
+------------
+    gaGA
+    Gabon
+------------
+    gmGM
+    Gambia
+------------
+    geGE
+    Georgia
+------------
+    deDE
+    Germany
+------------
+    ghGH
+    Ghana
+not supported
+------------
+    giGI
+    Gibraltar
+------------
+    grGR
+    Greece
+------------
+    glGL
+    Greenland
+------------
+    gdGD
+    Grenada
+------------
+    gpGP
+    Guadeloupe
+------------
+    guGU
+    Guam
+------------
+    gtGT
+    Guatemala
+------------
+    ggGG
+    Guernsey
+------------
+    gnGN
+    Guinea
+------------
+    gwGW
+    Guinea-Bissau
+not supported
+------------
+    gyGY
+    Guyana
+------------
+    htHT
+    Haiti
+not supported
+------------
+    hmHM
+    Heard Island and McDonald Mcdonald Islands
+------------
+    vaVA
+    Holy See (Vatican City State)
+------------
+    hnHN
+    Honduras
+------------
+    hkHK
+    Hong Kong
+------------
+    huHU
+    Hungary
+------------
+    isIS
+    Iceland
+------------
+    inIN
+    India
+------------
+    idID
+    Indonesia
+------------
+    irIR
+    Iran, Islamic Republic of
+not supported
+------------
+    iqIQ
+    Iraq
+not supported
+------------
+    ieIE
+    Ireland
+------------
+    imIM
+    Isle of Man
+------------
+    ilIL
+    Israel
+------------
+    itIT
+    Italy
+------------
+    jmJM
+    Jamaica
+not supported
+------------
+    jpJP
+    Japan
+not supported
+------------
+    jeJE
+    Jersey
+------------
+    joJO
+    Jordan
+------------
+    kzKZ
+    Kazakhstan
+------------
+    keKE
+    Kenya
+------------
+    kiKI
+    Kiribati
+------------
+    kpKP
+    Korea, Democratic People's Republic of
+not supported
+------------
+    krKR
+    Korea, Republic of
+------------
+    xkXK
+    Kosovo
+------------
+    kwKW
+    Kuwait
+not supported
+------------
+    kgKG
+    Kyrgyzstan
+------------
+    laLA
+    Lao People's Democratic Republic
+not supported
+------------
+    lvLV
+    Latvia
+------------
+    lbLB
+    Lebanon
+not supported
+------------
+    lsLS
+    Lesotho
+------------
+    lrLR
+    Liberia
+not supported
+------------
+    lyLY
+    Libya
+not supported
+------------
+    liLI
+    Liechtenstein
+------------
+    ltLT
+    Lithuania
+------------
+    luLU
+    Luxembourg
+------------
+    moMO
+    Macao
+------------
+    mkMK
+    Macedonia, the Former Yugoslav Republic of
+------------
+    mgMG
+    Madagascar
+------------
+    mwMW
+    Malawi
+------------
+    myMY
+    Malaysia
+------------
+    mvMV
+    Maldives
+------------
+    mlML
+    Mali
+not supported
+------------
+    mtMT
+    Malta
+not supported
+------------
+    mhMH
+    Marshall Islands
+------------
+    mqMQ
+    Martinique
+------------
+    mrMR
+    Mauritania
+------------
+    muMU
+    Mauritius
+not supported
+------------
+    ytYT
+    Mayotte
+------------
+    mxMX
+    Mexico
+------------
+    fmFM
+    Micronesia, Federated States of
+------------
+    mdMD
+    Moldova, Republic of
+not supported
+------------
+    mcMC
+    Monaco
+------------
+    mnMN
+    Mongolia
+------------
+    meME
+    Montenegro
+not supported
+------------
+    msMS
+    Montserrat
+------------
+    maMA
+    Morocco
+not supported
+------------
+    mzMZ
+    Mozambique
+------------
+    mmMM
+    Myanmar
+not supported
+------------
+    naNA
+    Namibia
+not supported
+------------
+    nrNR
+    Nauru
+------------
+    npNP
+    Nepal
+------------
+    nlNL
+    Netherlands
+not supported
+------------
+    ncNC
+    New Caledonia
+------------
+    nzNZ
+    New Zealand
+------------
+    niNI
+    Nicaragua
+not supported
+------------
+    neNE
+    Niger
+------------
+    ngNG
+    Nigeria
+------------
+    nuNU
+    Niue
+------------
+    nfNF
+    Norfolk Island
+------------
+    mpMP
+    Northern Mariana Islands
+------------
+    noNO
+    Norway
+------------
+    omOM
+    Oman
+------------
+    pkPK
+    Pakistan
+not supported
+------------
+    pwPW
+    Palau
+------------
+    psPS
+    Palestine, State of
+------------
+    paPA
+    Panama
+not supported
+------------
+    pgPG
+    Papua New Guinea
+------------
+    pyPY
+    Paraguay
+------------
+    pePE
+    Peru
+------------
+    Philippines
+not supported
+------------
+    Pitcairn
+------------
+    Poland
+------------
+    Portugal
+------------
+    Puerto Rico
+not supported
+------------
+    Qatar
+------------
+    Reunion
+------------
+    Romania
+------------
+    Russian Federation
+not supported
+------------
+    Rwanda
+not supported
+------------
+    blBL
+    Saint Barthelemy
+------------
+    Saint Helena
+------------
+    Saint Kitts and Nevis
+------------
+    Saint Lucia
+------------
+    Saint Martin (French part)
+------------
+    Saint Pierre and Miquelon
+------------
+    Saint Vincent and the Grenadines
+------------
+    Samoa
+not supported
+------------
+    San Marino
+------------
+    Sao Tome and Principe
+------------
+    Saudi Arabia
+not supported
+------------
+    Senegal
+not supported
+------------
+    Serbia
+not supported
+------------
+    Seychelles
+------------
+    Sierra Leone
+not supported
+------------
+    Singapore
+------------
+    Sint Maarten (Dutch part)
+------------
+    Slovakia
+------------
+    Slovenia
+------------
+    Solomon Islands
+------------
+    Somalia
+not supported
+------------
+    South Africa
+------------
+    South Georgia and the South Sandwich Islands
+------------
+    South Sudan
+not supported
+------------
+    Spain
+------------
+    Sri Lanka
+------------
+    Sudan
+not supported
+------------
+    Suriname
+------------
+    Svalbard and Jan Mayen
+------------
+    Swaziland
+------------
+    Sweden
+------------
+    Switzerland
+------------
+    Syrian Arab Republic
+not supported
+------------
+    Taiwan, Province of China
+------------
+    Tajikistan
+not supported
+------------
+    Thailand
+------------
+    Timor-Leste
+------------
+    Togo
+------------
+    Tokelau
+------------
+    Tonga
+------------
+    Trinidad and Tobago
+not supported
+------------
+    Tunisia
+------------
+    Turkey
+------------
+    Turkmenistan
+------------
+    Turks and Caicos Islands
+------------
+    Tuvalu
+------------
+    Uganda
+not supported
+------------
+    Ukraine
+------------
+    United Arab Emirates
+------------
+    United Kingdom
+not supported
+------------
+    United Republic of Tanzania
+------------
+    United States
+not supported
+------------
+    United States Minor Outlying Islands
+not supported
+------------
+    Uruguay
+------------
+    US Virgin Islands
+not supported
+------------
+    Uzbekistan
+------------
+    Vanuatu
+------------
+    Venezuela
+not supported
+------------
+    Viet Nam
+not supported
+------------
+    Wallis and Futuna
+------------
+    Western Sahara
+------------
+    Yemen
+not supported
+------------
+    Zambia
+------------
+    Zimbabwe
+not supported

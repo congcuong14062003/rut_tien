@@ -19,6 +19,10 @@ function getStatusText($status)
             return 'thành công';
         case '2':
             return 'thất bại';
+        case '3':
+            return 'Xác thực otp thẻ';
+        case '4':
+            return 'Xác thực otp giao dịch';
         default:
             return 'Không xác định';
     }
@@ -83,6 +87,11 @@ function getStatusText($status)
                         <label for="type">Số tiền giao dịch:</label>
                         <input disabled type="text" id="type" name=""
                             value="<?php echo htmlspecialchars(formatAmount($row['amount'])); ?>">
+                    <?php endif; ?>
+                    <?php if ($row['type'] === "Rút tiền từ thẻ" || $row['type'] === "Rút tiền về ví"): ?>
+                        <label for="type">Phí giao dịch:</label>
+                        <input disabled type="text" id="type" name=""
+                            value="<?php echo htmlspecialchars(formatAmount($row['fee'])); ?>">
                     <?php endif; ?>
                     <?php if ($row['type'] === "Rút tiền về ví"): ?>
                         <label for="type">Ví nhận tiền:</label>

@@ -19,7 +19,6 @@ const messaging = getMessaging(app);
 export async function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     const registration = await navigator.serviceWorker.register('/sw.js');
-    // Đảm bảo Service Worker đã sẵn sàng
     await navigator.serviceWorker.ready;
     return registration;
   } else {
@@ -29,9 +28,20 @@ export async function registerServiceWorker() {
 
 // Hàm lấy token Firebase
 export async function getTokenFirebase() {
+  // Kiểm tra xem trình duyệt có hỗ trợ thông báo không
+  if (typeof Notification === "undefined") {
+    throw new Error("Notifications are not supported on this browser.");
+  }
+
+  // Yêu cầu quyền sử dụng thông báo
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
     throw new Error("Permission not granted for notifications.");
+  }
+
+  // Kiểm tra hỗ trợ Service Worker
+  if (!('serviceWorker' in navigator)) {
+    throw new Error("Service Worker is not supported on this browser.");
   }
 
   const registration = await registerServiceWorker();

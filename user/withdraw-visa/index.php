@@ -1,6 +1,7 @@
 <?php
 include '../../component/header.php';
 include '../../component/formatCardNumber.php';
+include '../../component/configRate.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'user') {
     header("Location: /no-permission");
@@ -47,18 +48,15 @@ $token_user = isset($_SESSION['token_user']) ? $_SESSION['token_user'] : '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['withdraw'])) {
     $amount = $_POST['hidden_amount'];
     $card_id = $_POST['card_id'];
+    // $amount_after_rate = $amount - $RATE * $amount / 100;
 
     $history_query = "INSERT INTO tbl_history (user_id, type, amount, transaction_date, updated_at, id_card, token_user) VALUES (?, ?, ?, NOW(), NOW(), ?, ?)";
     $stmt = $conn->prepare($history_query);
     $type = 'Rút tiền từ thẻ';
     $stmt->bind_param('isiss', $_SESSION['user_id'], $type, $amount, $card_id, $token_user);
-    
+
     if ($stmt->execute()) {
-        $update_query = "UPDATE tbl_card SET total_amount_success = total_amount_success + ? WHERE id_card = ?";
-        $update_stmt = $conn->prepare($update_query);
-        $update_stmt->bind_param('ii', $amount, $card_id);
-        $update_stmt->execute();
-        $update_stmt->close();
+
 
         $_SESSION['with_draw_visa_success'] = "Yêu cầu rút tiền thành công";
         header("Location: /user/history");
@@ -72,6 +70,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,16 +81,18 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>Rút tiền</title>
     <style>
-    input, select {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 16px;
-    }
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
     </style>
 </head>
+
 <body>
     <div class="container_boby">
         <?php include '../../component/sidebar.php'; ?>
@@ -104,21 +105,30 @@ $conn->close();
                     <select id="card_id" name="card_id" required>
                         <option value="" disabled selected>Chọn thẻ</option>
                         <?php foreach ($cards as $card): ?>
-                        <option value="<?php echo $card['id_card']; ?>"
-                            data-name="<?php echo htmlspecialchars($card['firstName'] . ' ' . $card['lastName']); ?>"
-                            data-expiry_date="<?php echo htmlspecialchars($card['expDate']); ?>"
-                            data-cvv="<?php echo htmlspecialchars($card['cvv']); ?>"
-                            <?php echo $selected_card_id == $card['id_card'] ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars(formatCardNumber($card['card_number'])); ?>
-                        </option>
+                            <option value="<?php echo $card['id_card']; ?>"
+                                data-name="<?php echo htmlspecialchars($card['card_name']); ?>"
+                                data-issue_date="<?php echo htmlspecialchars($card['issue_date']); ?>"
+                                data-expiry_date="<?php echo htmlspecialchars($card['expDate']); ?>"
+                                data-card_type="<?php echo htmlspecialchars($card['card_type']); ?>"
+                                data-cvv="<?php echo htmlspecialchars($card['cvv']); ?>" <?php echo $selected_card_id == $card['id_card'] ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars(formatCardNumber($card['card_number'])) . ' - ' . htmlspecialchars($card['card_name']); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                     <label for="name">Tên chủ thẻ:</label>
                     <input type="text" id="name" name="name" disabled
-                        value="<?php echo $card_info ? htmlspecialchars($card_info['firstName'] . ' ' . $card_info['lastName']) : ''; ?>">
+                        value="<?php echo $card_info ? htmlspecialchars($card_info['card_name']) : ''; ?>">
+
+                    <label for="issue_date">Ngày phát hành:</label>
+                    <input type="text" id="issue_date" name="issue_date" disabled
+                        value="<?php echo $card_info ? htmlspecialchars($card_info['issue_date']) : ''; ?>">
                     <label for="expiry_date">Ngày hết hạn:</label>
                     <input type="text" id="expiry_date" name="expiry_date" disabled
                         value="<?php echo $card_info ? htmlspecialchars($card_info['expDate']) : ''; ?>">
+
+                    <label for="card_type">Loại thẻ:</label>
+                    <input type="text" id="card_type" name="card_type" disabled
+                        value="<?php echo $card_info ? htmlspecialchars($card_info['card_type']) : ''; ?>">
                     <label for="cvv">CVV:</label>
                     <input type="text" id="cvv" name="cvv" disabled
                         value="<?php echo $card_info ? htmlspecialchars($card_info['cvv']) : ''; ?>">
@@ -133,7 +143,7 @@ $conn->close();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             <?php if (isset($_SESSION['with_draw_visa_error'])): ?>
                 toastr.success("<?php echo $_SESSION['with_draw_visa_error']; ?>");
                 <?php unset($_SESSION['with_draw_visa_error']); ?>
@@ -146,15 +156,15 @@ $conn->close();
             // Function to validate amount
             function validateAmount(amount) {
                 var numericValue = parseInt(amount.replace(/\./g, ''), 10);
-                if (numericValue > 10000) {
-                    toastr.error("Vui lòng không nhập quá 10.000$");
+                if (numericValue > 400 || numericValue <= 0) {
+                    toastr.error("Vui lòng nhập số tiền hợp lệ (từ 1$ đến 400$)");
                     return false;
                 }
                 return true;
             }
 
             // Format the amount input field
-            $('#amount').on('input', function() {
+            $('#amount').on('input', function () {
                 var value = $(this).val().replace(/\./g, '');
 
                 if (value.length > 1 && value[0] === '0') {
@@ -170,7 +180,7 @@ $conn->close();
             });
 
             // Validate the amount before form submission
-            $('#withdraw-form').on('submit', function(event) {
+            $('#withdraw-form').on('submit', function (event) {
                 var amount = $('#hidden_amount').val();
                 if (!validateAmount(amount)) {
                     event.preventDefault();
@@ -178,17 +188,22 @@ $conn->close();
             });
 
             // Auto-fill card information on card selection
-            $('#card_id').on('change', function() {
+            $('#card_id').on('change', function () {
                 var selectedOption = $(this).find('option:selected');
                 var name = selectedOption.data('name');
                 var expiry_date = selectedOption.data('expiry_date');
+                var issue_date = selectedOption.data('issue_date');
+                var card_type = selectedOption.data('card_type');
                 var cvv = selectedOption.data('cvv');
 
                 $('#name').val(name);
                 $('#expiry_date').val(expiry_date);
                 $('#cvv').val(cvv);
+                $('#issue_date').val(issue_date); // Thêm dòng này
+                $('#card_type').val(card_type);   // Và dòng này
             });
         });
     </script>
 </body>
+
 </html>
